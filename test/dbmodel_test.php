@@ -1,0 +1,96 @@
+<?php
+/*
+ * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+require_once '../src/dbmodel/types.php';
+require_once '../src/dbmodel/values.php';
+use enorm\dbmodel as db;
+
+class DbModelTest extends PHPUnit_Framework_TestCase {
+
+	public function testTypes() {
+
+		$type = db\IntegerType::get();
+		$this->assertTrue($type !== NULL);
+		$this->assertEquals(db\TYPE_INTEGER, $type->getCategory());
+		$type2 = db\IntegerType::get();
+		$this->assertTrue($type === $type2);
+
+		$type = new db\DecimalType(5, 2);
+		$this->assertTrue($type !== NULL);
+		$this->assertEquals(db\TYPE_DECIMAL, $type->getCategory());
+		$this->assertEquals(5, $type->getLength());
+		$this->assertEquals(2, $type->getDigits());
+
+		$type = db\BooleanType::get();
+		$this->assertTrue($type !== NULL);
+		$this->assertEquals(db\TYPE_BOOLEAN, $type->getCategory());
+		$type2 = db\BooleanType::get();
+		$this->assertTrue($type === $type2);
+
+		$type = db\StringType::get();
+		$this->assertTrue($type !== NULL);
+		$this->assertEquals(db\TYPE_STRING, $type->getCategory());
+		$type2 = db\StringType::get();
+		$this->assertTrue($type === $type2);
+
+		$type = new db\VarCharType(255);
+		$this->assertTrue($type !== NULL);
+		$this->assertEquals(db\TYPE_VARCHAR, $type->getCategory());
+		$this->assertEquals(255, $type->getLength());
+
+		$type = db\DateType::get();
+		$this->assertTrue($type !== NULL);
+		$this->assertEquals(db\TYPE_DATE, $type->getCategory());
+		$type2 = db\DateType::get();
+		$this->assertTrue($type === $type2);
+
+		$type = db\TimeType::get();
+		$this->assertTrue($type !== NULL);
+		$this->assertEquals(db\TYPE_TIME, $type->getCategory());
+		$type2 = db\TimeType::get();
+		$this->assertTrue($type === $type2);
+
+	}
+
+	public function testValues() {
+
+		$value = db\ValueFactory::createBoolean();
+		$this->assertTrue($value !== NULL);
+		$this->assertEquals(db\TYPE_BOOLEAN, $value->getType()->getCategory());
+		$this->assertEquals(TRUE, $value->getContent());
+
+		$value = db\ValueFactory::createInteger(42);
+		$this->assertTrue($value !== NULL);
+		$this->assertEquals(db\TYPE_INTEGER, $value->getType()->getCategory());
+		$this->assertEquals(42, $value->getContent());
+
+		$value = db\ValueFactory::createText("Hallo Welt");
+		$this->assertTrue($value !== NULL);
+		$this->assertEquals(db\TYPE_STRING, $value->getType()->getCategory());
+		$this->assertEquals("Hallo Welt", $value->getContent());
+
+		$value = db\ValueFactory::createText("Hallo Welt", 5);
+		$this->assertTrue($value !== NULL);
+		$this->assertEquals(db\TYPE_VARCHAR, $value->getType()->getCategory());
+		$this->assertEquals("Hallo", $value->getContent());
+
+	}
+
+}
+
+?>

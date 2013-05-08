@@ -16,18 +16,72 @@
  * limitations under the License.
  *
  */
+
+namespace enorm\dbmodel;
  
- class Table {
+class Table {
  
-	public function __construct($name) {
+	public $name;
+	
+	public function __construct($db, $name) {
+		
+		$db->addTable($this);
+		$this->db = $db;
 		
 		$this->name = $name;
 	
 	}
- 
-	private $name;
-	private $fields = array();
-  
+	
+	public function addDataField($name, $type) {
+		
+		$this->datafields[] = array($name, $type);  
+		
+	}  
+	
+	public function addKeyField($name, $type) {  
+		
+		$this->keyfields[] = array($name, $type);  
+		
+	}	
+	
+	public function getDataFields() {
+		
+		return $this->datafields;
+		
+	} 
+	
+ 	public function getDb($db) {
+		
+		return $this->db;
+		
+	}
+	
+	public function getFields() {
+		
+		$res = array();
+		
+		foreach ($this->keyfields as $fld) {
+			$res[] = array($fld[0], $fld[1], TRUE);
+		}
+		
+		foreach ($this->datafields as $fld) {
+			$res[] = array($fld[0], $fld[1], FALSE);
+		}
+
+		return $res;
+		
+	}
+	
+	public function getKeyFields() {
+		
+		return $this->keyfields;
+		
+	}
+	
+	private $db = null;
+	private $keyfields = array();
+	private $datafields = array();
+	
  }
  
  ?>
