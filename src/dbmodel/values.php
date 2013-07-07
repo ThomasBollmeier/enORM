@@ -18,7 +18,7 @@
 
 namespace enorm\dbmodel;
 
-require_once 'dbmodel/types.php';
+require_once 'types.php';
 
 interface Value {
 
@@ -64,6 +64,86 @@ class VarCharValue extends SimpleValue {
 
 }
 
+class Date implements Value {
+
+    public function __construct($year, $month, $day) {
+
+        $this->year = $year;
+        $this->month = $month;
+        $this->day = $day;
+
+    }
+
+    public function getYear() {
+
+        return $this->year;
+
+    }
+
+    public function getMonth() {
+
+        return $this->month;
+
+    }
+
+    public function getDay() {
+
+        return $this->day;
+
+    }
+
+    public function getType() {
+
+        return DateType::get();
+
+    }
+
+    private $year;
+    private $month;
+    private $day;
+
+}
+
+class Time implements Value {
+
+    public function __construct($hour, $minute, $second) {
+
+        $this->hour = $hour;
+        $this->min = $minute;
+        $this->sec = $second;
+
+    }
+
+    public function getHour() {
+
+        return $this->hour;
+
+    }
+
+    public function getMinute() {
+
+        return $this->min;
+
+    }
+
+    public function getSecond() {
+
+        return $this->sec;
+
+    }
+
+    public function getType() {
+
+        return TimeType::get();
+
+    }
+
+    private $hour;
+    private $min;
+    private $sec;
+
+}
+
 class ValueFactory {
 
 	public static function createInteger($ival) {
@@ -92,6 +172,16 @@ class ValueFactory {
 
 	}
 
-}
+    public static function createDate($year, $month, $day) {
 
-?>
+        return new Date($year, $month, $day);
+
+    }
+
+    public static function createTime($hour, $minute, $second) {
+
+        return new Time($hour, $minute, $second);
+
+    }
+
+}

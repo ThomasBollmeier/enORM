@@ -188,5 +188,3 @@ class TimeType extends Type {
 	private static $single = null;
 
 }
-
-?>

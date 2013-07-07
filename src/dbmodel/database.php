@@ -51,5 +51,4 @@ class Database {
 	 private $tables = array();
 	 	 
 }
- 
-?>
+

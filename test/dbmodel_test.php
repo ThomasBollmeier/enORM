@@ -18,6 +18,8 @@
 
 require_once '../src/dbmodel/types.php';
 require_once '../src/dbmodel/values.php';
+require_once '../src/dbmodel/table.php';
+require_once '../src/dbmodel/database.php';
 use enorm\dbmodel as db;
 
 class DbModelTest extends PHPUnit_Framework_TestCase {
@@ -89,8 +91,48 @@ class DbModelTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(db\TYPE_VARCHAR, $value->getType()->getCategory());
 		$this->assertEquals("Hallo", $value->getContent());
 
+        $value = db\ValueFactory::createDate(2013, 12, 31);
+        $this->assertTrue($value !== NULL);
+        $this->assertEquals(db\TYPE_DATE, $value->getType()->getCategory());
+        $this->assertEquals(2013, $value->getYear());
+        $this->assertEquals(12, $value->getMonth());
+        $this->assertEquals(31, $value->getDay());
+
+        $value = db\ValueFactory::createTime(12, 30, 45);
+        $this->assertTrue($value !== NULL);
+        $this->assertEquals(db\TYPE_TIME, $value->getType()->getCategory());
+        $this->assertEquals(12, $value->getHour());
+        $this->assertEquals(30, $value->getMinute());
+        $this->assertEquals(45, $value->getSecond());
+
 	}
 
-}
+    public function testTable() {
 
-?>
+        $db = new db\Database("demo");
+
+        $table = new db\Table($db, "persons");
+
+        $table->addKeyField("id", db\IntegerType::get());
+        try {
+            $table->addKeyField("id", db\IntegerType::get());
+            $excOccurred = FALSE;
+        } catch (\Exception $error) {
+            $excOccurred = TRUE;
+        }
+        $this->assertTrue($excOccurred);
+
+        $table->addDataField("name", new db\VarCharType(50));
+        try {
+            $table->addDataField("name", new db\VarCharType(50));
+            $excOccurred = FALSE;
+        } catch (\Exception $error) {
+            $excOccurred = TRUE;
+        }
+        $this->assertTrue($excOccurred);
+
+        $table->addDataField("first_name", new db\VarCharType(50), TRUE);
+
+    }
+
+}

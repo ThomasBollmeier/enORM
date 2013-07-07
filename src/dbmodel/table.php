@@ -18,6 +18,8 @@
  */
 
 namespace enorm\dbmodel;
+
+require_once 'field.php';
  
 class Table {
  
@@ -32,15 +34,23 @@ class Table {
 	
 	}
 	
-	public function addDataField($name, $type) {
-		
-		$this->datafields[] = array($name, $type);  
+	public function addDataField($name, $type, $nullAllowed=TRUE) {
+
+        if ($this->existsName($name)) {
+            throw new  \Exception("There is already a field with name '$name'!");
+        }
+
+		$this->datafields[] = new Field($name, $type, array("nullAllowed" => $nullAllowed));
 		
 	}  
 	
-	public function addKeyField($name, $type) {  
-		
-		$this->keyfields[] = array($name, $type);  
+	public function addKeyField($name, $type) {
+
+        if ($this->existsName($name)) {
+            throw new  \Exception("There is already a field with name '$name'!");
+        }
+
+		$this->keyfields[] = new Field($name, $type, array("nullAllowed" => FALSE));
 		
 	}	
 	
@@ -50,7 +60,7 @@ class Table {
 		
 	} 
 	
- 	public function getDb($db) {
+ 	public function getDb() {
 		
 		return $this->db;
 		
@@ -61,11 +71,11 @@ class Table {
 		$res = array();
 		
 		foreach ($this->keyfields as $fld) {
-			$res[] = array($fld[0], $fld[1], TRUE);
+			$res[] = array($fld, TRUE);
 		}
 		
 		foreach ($this->datafields as $fld) {
-			$res[] = array($fld[0], $fld[1], FALSE);
+			$res[] = array($fld, FALSE);
 		}
 
 		return $res;
@@ -77,11 +87,28 @@ class Table {
 		return $this->keyfields;
 		
 	}
+
+    private function existsName($name) {
+
+        foreach ($this->keyfields as $field) {
+            if ($field->getName() === $name) {
+                return TRUE;
+            }
+        }
+
+        foreach ($this->datafields as $field) {
+            if ($field->getName() === $name) {
+                return TRUE;
+            }
+        }
+
+        return FALSE;
+
+    }
 	
 	private $db = null;
 	private $keyfields = array();
 	private $datafields = array();
 	
  }
- 
- ?>
+
