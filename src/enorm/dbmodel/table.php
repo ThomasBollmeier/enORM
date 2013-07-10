@@ -40,7 +40,7 @@ class Table {
             throw new  \Exception("There is already a field with name '$name'!");
         }
 
-		$this->datafields[] = new Field($name, $type, array("nullAllowed" => $nullAllowed));
+		$this->datafields[] = new Field($this, $name, $type, array("nullAllowed" => $nullAllowed));
 		
 	}  
 	
@@ -50,7 +50,7 @@ class Table {
             throw new  \Exception("There is already a field with name '$name'!");
         }
 
-		$this->keyfields[] = new Field($name, $type, array("nullAllowed" => FALSE));
+		$this->keyfields[] = new Field($this, $name, $type, array("nullAllowed" => FALSE));
 		
 	}	
 	

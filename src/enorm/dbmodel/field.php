@@ -3,8 +3,9 @@ namespace enorm\dbmodel;
 
 class Field {
 
-    public function __construct($name, $type, $properties = array("nullAllowed" => FALSE)) {
+    public function __construct($table, $name, $type, $properties = array("nullAllowed" => FALSE)) {
 
+        $this->table = $table;
         $this->name = $name;
         $this->type = $type;
         $this->properties = $properties;
@@ -31,6 +32,7 @@ class Field {
 
     }
 
+    private $table;
     private $name;
     private $type;
     private $properties;

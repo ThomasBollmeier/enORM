@@ -16,10 +16,10 @@
  *
  */
 
-require_once '../src/dbmodel/types.php';
-require_once '../src/dbmodel/values.php';
-require_once '../src/dbmodel/table.php';
-require_once '../src/dbmodel/database.php';
+require_once '../src/enorm/dbmodel/types.php';
+require_once '../src/enorm/dbmodel/values.php';
+require_once '../src/enorm/dbmodel/table.php';
+require_once '../src/enorm/dbmodel/database.php';
 use enorm\dbmodel as db;
 
 class DbModelTest extends PHPUnit_Framework_TestCase {
@@ -132,6 +132,8 @@ class DbModelTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($excOccurred);
 
         $table->addDataField("first_name", new db\VarCharType(50), TRUE);
+
+        $this->assertEquals(3, count($table->getFields()));
 
     }
 
