@@ -17,27 +17,16 @@
  */
 namespace enorm\dbapi;
 
-require_once 'filter.php';
+interface Connection {
 
-class Negation extends Filter
-{
+    public function createTable($tableDef);
 
-    public function __construct($filter)
-    {
+    public function create($row);
 
-        parent::__construct();
+    public function read($source, $fields=null, $filter=null);
 
-        $this->filter = $filter;
+    public function update($table, $fields, $filter);
 
-    }
-
-    public function getFilter()
-    {
-
-        return $this->filter;
-
-    }
-
-    private $filter;
+    public function delete($table, $filter);
 
 }

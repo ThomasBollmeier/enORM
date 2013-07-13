@@ -18,16 +18,16 @@
 
 namespace enorm\dbmodel;
 
-// Type categories:
-define("enorm\dbmodel\TYPE_INTEGER", 1);
-define("enorm\dbmodel\TYPE_DECIMAL", 2);
-define("enorm\dbmodel\TYPE_BOOLEAN", 3);
-define("enorm\dbmodel\TYPE_VARCHAR", 4);
-define("enorm\dbmodel\TYPE_STRING", 5);
-define("enorm\dbmodel\TYPE_DATE", 6);
-define("enorm\dbmodel\TYPE_TIME", 7);
-
 abstract class Type {
+
+    // Type categories:
+    const INTEGER = 1;
+    const DECIMAL = 2;
+    const BOOLEAN = 3;
+    const VARCHAR = 4;
+    const STRING = 5;
+    const DATE = 6;
+    const TIME = 7;
 
 	public function getCategory() {
 
@@ -57,7 +57,7 @@ class IntegerType extends Type {
 
 	private function __construct() {
 	
-		$this->init(TYPE_INTEGER);
+		$this->init(Type::INTEGER);
 	
 	}
 
@@ -69,7 +69,7 @@ class DecimalType extends Type {
 
 	public function __construct($length, $digits) {
 
-		$this->init(TYPE_DECIMAL);
+		$this->init(Type::DECIMAL);
 		
 		$this->length = $length;
 		$this->digits = $digits;
@@ -101,7 +101,7 @@ class BooleanType extends Type {
 
 	private function __construct() {
 	
-		$this->init(TYPE_BOOLEAN);
+		$this->init(Type::BOOLEAN);
 	
 	}
 
@@ -113,7 +113,7 @@ class VarCharType extends Type {
 
 	public function __construct($length) {
 
-		$this->init(TYPE_VARCHAR);
+		$this->init(Type::VARCHAR);
 
 		$this->length = $length;
 
@@ -141,7 +141,7 @@ class StringType extends Type {
 
 	private function __construct() {
 	
-		$this->init(TYPE_STRING);
+		$this->init(Type::STRING);
 	
 	}
 
@@ -161,7 +161,7 @@ class DateType extends Type {
 
 	private function __construct() {
 	
-		$this->init(TYPE_DATE);
+		$this->init(Type::DATE);
 	
 	}
 
@@ -181,7 +181,7 @@ class TimeType extends Type {
 
 	private function __construct() {
 	
-		$this->init(TYPE_TIME);
+		$this->init(Type::TIME);
 	
 	}
 

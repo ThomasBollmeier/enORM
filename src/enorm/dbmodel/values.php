@@ -20,53 +20,62 @@ namespace enorm\dbmodel;
 
 require_once 'types.php';
 
-interface Value {
+interface Value
+{
 
-	public function getType();
-
-}
-
-class SimpleValue implements Value {
-
-	public function __construct($content, $type) {
-
-		$this->content = $content;
-		$this->type = $type;
-
-	}
-
-	public function getContent() {
-
-		return $this->content;
-
-	}
-
-	public function getType() {
-		
-		return $this->type;
-
-	}
-
-	private $content;
-	private $type;
+    public function getType();
 
 }
 
-class VarCharValue extends SimpleValue {
+class SimpleValue implements Value
+{
 
-	public function __construct($content, $maxlen) {
+    public function __construct($content, $type)
+    {
 
-		$tmp = substr($content, 0, $maxlen);
+        $this->content = $content;
+        $this->type = $type;
 
-		parent::__construct($tmp, new VarCharType($maxlen));
+    }
 
-	}
+    public function getContent()
+    {
+
+        return $this->content;
+
+    }
+
+    public function getType()
+    {
+
+        return $this->type;
+
+    }
+
+    private $content;
+    private $type;
 
 }
 
-class Date implements Value {
+class VarCharValue extends SimpleValue
+{
 
-    public function __construct($year, $month, $day) {
+    public function __construct($content, $maxlen)
+    {
+
+        $tmp = substr($content, 0, $maxlen);
+
+        parent::__construct($tmp, new VarCharType($maxlen));
+
+    }
+
+}
+
+class Date implements Value
+{
+
+    public function __construct($year, $month, $day)
+    {
 
         $this->year = $year;
         $this->month = $month;
@@ -74,25 +83,29 @@ class Date implements Value {
 
     }
 
-    public function getYear() {
+    public function getYear()
+    {
 
         return $this->year;
 
     }
 
-    public function getMonth() {
+    public function getMonth()
+    {
 
         return $this->month;
 
     }
 
-    public function getDay() {
+    public function getDay()
+    {
 
         return $this->day;
 
     }
 
-    public function getType() {
+    public function getType()
+    {
 
         return DateType::get();
 
@@ -104,9 +117,11 @@ class Date implements Value {
 
 }
 
-class Time implements Value {
+class Time implements Value
+{
 
-    public function __construct($hour, $minute, $second) {
+    public function __construct($hour, $minute, $second)
+    {
 
         $this->hour = $hour;
         $this->min = $minute;
@@ -114,25 +129,29 @@ class Time implements Value {
 
     }
 
-    public function getHour() {
+    public function getHour()
+    {
 
         return $this->hour;
 
     }
 
-    public function getMinute() {
+    public function getMinute()
+    {
 
         return $this->min;
 
     }
 
-    public function getSecond() {
+    public function getSecond()
+    {
 
         return $this->sec;
 
     }
 
-    public function getType() {
+    public function getType()
+    {
 
         return TimeType::get();
 
@@ -144,41 +163,76 @@ class Time implements Value {
 
 }
 
-class ValueFactory {
+class ValueFactory
+{
 
-	public static function createInteger($ival) {
+    public static function createInitValue(Type $type)
+    {
+        $category = $type->getCategory();
 
-		return new SimpleValue($ival, IntegerType::get());
+        switch ($category) {
+            case Type::INTEGER:
+                return self::createInteger(0);
+            case Type::BOOLEAN:
+                return self::createBoolean(FALSE);
+            case Type::DECIMAL:
+                $length = $type->getLength();
+                $digits = $type->getDigits();
+                return self::createDecimal(0.0, $length, $digits);
+            case Type::VARCHAR:
+                $maxLength = $type->getLength();
+                return self::createText("", $maxLength);
+            case Type::STRING:
+                return self::createText("");
+            case Type::DATE:
+                return self::createDate(0, 0, 0);
+            case Type::TIME:
+                return self::createTime(0, 0, 0);
+            default:
+                return null;
+        }
 
-	}
+    }
 
-	public static function createBoolean($bval=TRUE) {
+    public static function createInteger($ival)
+    {
 
-		return new SimpleValue($bval, BooleanType::get());
+        return new SimpleValue($ival, IntegerType::get());
 
-	}
+    }
 
-	public static function createDecimal($decval, $length=0, $digits=0) {
+    public static function createBoolean($bval = TRUE)
+    {
 
-		return new SimpleValue($decval, new DecimalType($length, $digits));
+        return new SimpleValue($bval, BooleanType::get());
 
-	}
+    }
 
-	public static function createText($textval, $maxlen=0) {
+    public static function createDecimal($decval, $length = 0, $digits = 0)
+    {
 
-		return !$maxlen ? 
-			new SimpleValue($textval, StringType::get()) : 
-			new VarCharValue($textval, $maxlen); 
+        return new SimpleValue($decval, new DecimalType($length, $digits));
 
-	}
+    }
 
-    public static function createDate($year, $month, $day) {
+    public static function createText($textval, $maxlen = 0)
+    {
+
+        return !$maxlen ?
+            new SimpleValue($textval, StringType::get()) :
+            new VarCharValue($textval, $maxlen);
+
+    }
+
+    public static function createDate($year, $month, $day)
+    {
 
         return new Date($year, $month, $day);
 
     }
 
-    public static function createTime($hour, $minute, $second) {
+    public static function createTime($hour, $minute, $second)
+    {
 
         return new Time($hour, $minute, $second);
 

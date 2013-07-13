@@ -1,5 +1,4 @@
 <?php
-
 /*
  * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
  *
@@ -20,6 +19,7 @@
 namespace enorm\dbmodel;
 
 require_once 'field.php';
+require_once 'record.php';
  
 class Table {
  
@@ -87,6 +87,23 @@ class Table {
 		return $this->keyfields;
 		
 	}
+
+    public function getFieldByPos($pos) {
+
+        if ($pos < count($this->keyfields)) {
+            return $this->keyfields[$pos];
+        } else {
+            $pos -= count($this->keyfields);
+            return $this->datafields[$pos];
+        }
+
+    }
+
+    public function createRecord() {
+
+        return new Record(array_merge($this->keyfields, $this->datafields));
+
+    }
 
     private function existsName($name) {
 
