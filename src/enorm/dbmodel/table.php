@@ -20,75 +20,84 @@ namespace enorm\dbmodel;
 
 require_once 'field.php';
 require_once 'record.php';
- 
-class Table {
- 
-	public $name;
-	
-	public function __construct($db, $name) {
-		
-		$db->addTable($this);
-		$this->db = $db;
-		
-		$this->name = $name;
-	
-	}
-	
-	public function addDataField($name, $type, $nullAllowed=TRUE) {
+
+class Table
+{
+
+    public $name;
+
+    public function __construct($db, $name)
+    {
+
+        $db->addTable($this);
+        $this->db = $db;
+
+        $this->name = $name;
+
+    }
+
+    public function addDataField($name, $type, $nullAllowed = TRUE)
+    {
 
         if ($this->existsName($name)) {
             throw new  \Exception("There is already a field with name '$name'!");
         }
 
-		$this->datafields[] = new Field($this, $name, $type, array("nullAllowed" => $nullAllowed));
-		
-	}  
-	
-	public function addKeyField($name, $type) {
+        $this->datafields[] = new Field($this, $name, $type, array("nullAllowed" => $nullAllowed));
+
+    }
+
+    public function addKeyField($name, $type)
+    {
 
         if ($this->existsName($name)) {
             throw new  \Exception("There is already a field with name '$name'!");
         }
 
-		$this->keyfields[] = new Field($this, $name, $type, array("nullAllowed" => FALSE));
-		
-	}	
-	
-	public function getDataFields() {
-		
-		return $this->datafields;
-		
-	} 
-	
- 	public function getDb() {
-		
-		return $this->db;
-		
-	}
-	
-	public function getFields() {
-		
-		$res = array();
-		
-		foreach ($this->keyfields as $fld) {
-			$res[] = array($fld, TRUE);
-		}
-		
-		foreach ($this->datafields as $fld) {
-			$res[] = array($fld, FALSE);
-		}
+        $this->keyfields[] = new Field($this, $name, $type, array("nullAllowed" => FALSE));
 
-		return $res;
-		
-	}
-	
-	public function getKeyFields() {
-		
-		return $this->keyfields;
-		
-	}
+    }
 
-    public function getFieldByPos($pos) {
+    public function getDataFields()
+    {
+
+        return $this->datafields;
+
+    }
+
+    public function getDb()
+    {
+
+        return $this->db;
+
+    }
+
+    public function getFields()
+    {
+
+        $res = array();
+
+        foreach ($this->keyfields as $fld) {
+            $res[] = array($fld, TRUE);
+        }
+
+        foreach ($this->datafields as $fld) {
+            $res[] = array($fld, FALSE);
+        }
+
+        return $res;
+
+    }
+
+    public function getKeyFields()
+    {
+
+        return $this->keyfields;
+
+    }
+
+    public function getFieldByPos($pos)
+    {
 
         if ($pos < count($this->keyfields)) {
             return $this->keyfields[$pos];
@@ -99,13 +108,21 @@ class Table {
 
     }
 
-    public function createRecord() {
+    public function createRecord()
+    {
 
-        return new Record(array_merge($this->keyfields, $this->datafields));
+        $fields = array_merge($this->keyfields, $this->datafields);
+        $components = array();
+        foreach ($fields as $field) {
+            array_push($components, new Component($field->getName(), $field->getType(), $field->isNullAllowed()));
+        }
+
+        return new Record($components);
 
     }
 
-    private function existsName($name) {
+    private function existsName($name)
+    {
 
         foreach ($this->keyfields as $field) {
             if ($field->getName() === $name) {
@@ -122,10 +139,10 @@ class Table {
         return FALSE;
 
     }
-	
-	private $db = null;
-	private $keyfields = array();
-	private $datafields = array();
-	
- }
+
+    private $db = null;
+    private $keyfields = array();
+    private $datafields = array();
+
+}
 

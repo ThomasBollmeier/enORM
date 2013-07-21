@@ -15,18 +15,19 @@
  * limitations under the License.
  *
  */
-namespace enorm\dbapi;
 
-interface Connection {
+abstract class ReadTarget {
 
-    public function createTable($table);
+    // Target categories:
+    const FIELD = 1;
+    const AGGREGATE = 2;
 
-    public function create($table, $record);
+}
 
-    public function read($source, $targetInfo=null, $filter=null);
+class ReadTargetField extends ReadTarget {
 
-    public function update($table, $fields, $filter);
+    public function __construct() {
 
-    public function delete($table, $filter);
+    }
 
 }

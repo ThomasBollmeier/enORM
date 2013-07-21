@@ -71,39 +71,61 @@ class DbModelTest extends PHPUnit_Framework_TestCase {
 
 	public function testValues() {
 
-		$value = db\ValueFactory::createBoolean();
+		$value = new db\BooleanValue(TRUE);
 		$this->assertTrue($value !== NULL);
 		$this->assertEquals(db\Type::BOOLEAN, $value->getType()->getCategory());
 		$this->assertEquals(TRUE, $value->getContent());
+        $value->setContent(FALSE);
+        $this->assertEquals(FALSE, $value->getContent());
 
-		$value = db\ValueFactory::createInteger(42);
+		$value = new db\IntegerValue(42);
 		$this->assertTrue($value !== NULL);
 		$this->assertEquals(db\Type::INTEGER, $value->getType()->getCategory());
 		$this->assertEquals(42, $value->getContent());
+        $value->setContent(666);
+        $this->assertEquals(666, $value->getContent());
 
-		$value = db\ValueFactory::createText("Hallo Welt");
+		$value = new db\StringValue("Hallo Welt");
 		$this->assertTrue($value !== NULL);
 		$this->assertEquals(db\Type::STRING, $value->getType()->getCategory());
 		$this->assertEquals("Hallo Welt", $value->getContent());
 
-		$value = db\ValueFactory::createText("Hallo Welt", 5);
+		$value = new db\VarCharValue(new db\VarCharType(5), "Hallo Welt");
 		$this->assertTrue($value !== NULL);
 		$this->assertEquals(db\Type::VARCHAR, $value->getType()->getCategory());
 		$this->assertEquals("Hallo", $value->getContent());
+        $value->setContent("ABCDEFG");
+        $this->assertEquals("ABCDE", $value->getContent());
 
-        $value = db\ValueFactory::createDate(2013, 12, 31);
+        $value = new db\DateValue(2013, 12, 31);
         $this->assertTrue($value !== NULL);
         $this->assertEquals(db\Type::DATE, $value->getType()->getCategory());
         $this->assertEquals(2013, $value->getYear());
         $this->assertEquals(12, $value->getMonth());
         $this->assertEquals(31, $value->getDay());
 
-        $value = db\ValueFactory::createTime(12, 30, 45);
+        $value = new db\DateValue();
+        $this->assertTrue($value !== NULL);
+        $this->assertEquals(db\Type::DATE, $value->getType()->getCategory());
+        $value->setContent('2013-07-21');
+        $this->assertEquals(2013, $value->getYear());
+        $this->assertEquals(7, $value->getMonth());
+        $this->assertEquals(21, $value->getDay());
+
+        $value = new db\TimeValue(12, 30, 45);
         $this->assertTrue($value !== NULL);
         $this->assertEquals(db\Type::TIME, $value->getType()->getCategory());
         $this->assertEquals(12, $value->getHour());
         $this->assertEquals(30, $value->getMinute());
         $this->assertEquals(45, $value->getSecond());
+
+        $value = new db\TimeValue();
+        $this->assertTrue($value !== NULL);
+        $this->assertEquals(db\Type::TIME, $value->getType()->getCategory());
+        $value->setContent('15:50:00');
+        $this->assertEquals(15, $value->getHour());
+        $this->assertEquals(50, $value->getMinute());
+        $this->assertEquals(0, $value->getSecond());
 
 	}
 
@@ -132,17 +154,31 @@ class DbModelTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($excOccurred);
 
         $table->addDataField("first_name", new db\VarCharType(50), TRUE);
+        $table->addDataField("birth_day", db\DateType::get(), TRUE);
 
-        $this->assertEquals(3, count($table->getFields()));
+        $this->assertEquals(4, count($table->getFields()));
 
         $record = $table->createRecord();
 
-        $fieldnames = array("id", "name", "first_name");
+        $fieldnames = array("id", "name", "first_name", "birth_day");
         $i = 0;
 
         foreach ($record as $name => $value) {
             $this->assertEquals($fieldnames[$i++], $name);
         }
+
+        $record->id = 4711;
+        $record->name = "Mustermann";
+        $record->first_name = "Herbert";
+
+        $this->assertEquals(4711, $record->id);
+        $this->assertEquals("Mustermann", $record->name);
+        $this->assertEquals("Herbert", $record->first_name);
+
+        $this->assertEquals(null, $record->birth_day);
+        $record->birth_day = '1945-05-08';
+        $this->assertEquals(1945, $record->birth_day->getYear());
+
 
     }
 

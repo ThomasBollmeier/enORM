@@ -22,25 +22,110 @@ require_once "values.php";
 class Record implements \Iterator
 {
 
-    public function __construct($fields)
+    public function __construct($components)
     {
-        $this->fields = $fields;
+        $this->components = $components;
 
+        $this->compmap = array();
         $this->values = array();
-        $this->mapping = array();
+        $this->valuemap = array();
 
-        foreach ($this->fields as $field) {
-            $value = !$field->isNullAllowed() ? ValueFactory::createInitValue($field->getType()) : null;
+        $valueIdx = 0;
+
+        foreach ($this->components as $comp) {
+
+            $this->compmap[$comp->name] = $comp;
+
+            $value = !$comp->isNullAllowed ? ValueFactory::createInitValue($comp->type) : null;
             array_push($this->values, $value);
-            $this->mapping[$field->getName()] = $value;
+
+            $this->valuemap[$comp->name] = array($value, $valueIdx);
+            $valueIdx++;
+
         }
 
     }
 
-    public function __get($name)
+    public function setBoolean($componentName, $boolval)
+    {
+        $value = $this->_getValue($componentName, TRUE);
+        $value->setContent($boolval);
+    }
+
+    public function setInteger($componentName, $intval)
+    {
+        $value = $this->_getValue($componentName, TRUE);
+        $value->setContent($intval);
+    }
+
+    public function setDecimal($componentName, $decval)
+    {
+        $value = $this->_getValue($componentName, TRUE);
+        $value->setContent($decval);
+    }
+
+    public function setString($componentName, $strval)
+    {
+        $value = $this->_getValue($componentName, TRUE);
+        $value->setContent($strval);
+    }
+
+    public function setVarchar($componentName, $varcharval)
+    {
+        $value = $this->_getValue($componentName, TRUE);
+        $value->setContent($varcharval);
+    }
+
+    public function setDate($componentName, $year, $month, $day)
+    {
+        $value = $this->_getValue($componentName, TRUE);
+        $value->setYear($year)
+            ->setMonth($month)
+            ->setDay($day);
+    }
+
+    public function setTime($componentName, $hour, $minute, $second)
+    {
+        $value = $this->_getValue($componentName, TRUE);
+        $value->setHour($hour)
+            ->setMinute($minute)
+            ->setSecond($second);
+    }
+
+    public function getValue($componentName)
     {
 
-        return $this->mapping[$name];
+        return $this->_getValue($componentName, FALSE);
+
+    }
+
+    public function __get($componentName)
+    {
+        $value = $this->_getValue($componentName, FALSE);
+
+        if ($value !== null) {
+
+            $category = $value->getType()->getCategory();
+
+            switch ($category) {
+                case Type::DATE:
+                case Type::TIME:
+                    return $value;
+                default:
+                    return $value->getContent();
+            }
+
+        } else {
+            return null;
+        }
+
+    }
+
+    public function __set($componentName, $content)
+    {
+
+        $value = $this->_getValue($componentName, TRUE);
+        $value->setContent($content);
 
     }
 
@@ -74,9 +159,9 @@ class Record implements \Iterator
      */
     public function key()
     {
-        if ($this->iterpos >= count($this->fields)) return null;
+        if ($this->iterpos >= count($this->components)) return null;
 
-        return $this->fields[$this->iterpos]->getName();
+        return $this->components[$this->iterpos]->name;
     }
 
     /**
@@ -88,7 +173,7 @@ class Record implements \Iterator
      */
     public function valid()
     {
-        return $this->iterpos < count($this->fields);
+        return $this->iterpos < count($this->components);
     }
 
     /**
@@ -102,9 +187,45 @@ class Record implements \Iterator
         $this->iterpos = 0;
     }
 
-    public $fields;
-    public $values;
-    public $mapping;
+    private $components;
+    private $compmap;
+    private $values;
+    private $valuemap;
     private $iterpos = 0;
+
+    private function _getValue($componentName, $createIfNull = FALSE)
+    {
+        $valueInfo = $this->valuemap[$componentName];
+        $value = $valueInfo[0];
+
+        if ($createIfNull && $value === null) {
+
+            $comp = $this->compmap[$componentName];
+            $value = ValueFactory::createInitValue($comp->type);
+
+            $valueIdx = $valueInfo[1];
+            $this->values[$valueIdx] = $value;
+            $this->valuemap[$componentName] = array($value, $valueIdx);
+
+        }
+
+        return $value;
+
+    }
+
+}
+
+class Component
+{
+    public $name;
+    public $type;
+    public $isNullAllowed;
+
+    public function __construct($name, $type, $isNullAllowed = FALSE)
+    {
+        $this->name = $name;
+        $this->type = $type;
+        $this->isNullAllowed = $isNullAllowed;
+    }
 
 }
