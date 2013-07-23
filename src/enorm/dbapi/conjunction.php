@@ -17,15 +17,15 @@
  */
 namespace enorm\dbapi;
 
-require_once 'compound_filter.php';
+require_once 'compound_condition.php';
 
-class Conjunction extends CompoundFilter
+class Conjunction extends CompoundCondition
 {
 
-    public function __construct($filter1, $filter2)
+    public function __construct($condition_1, $condition_2)
     {
 
-        parent::__construct($filter1, $filter2);
+        parent::__construct($condition_1, $condition_2);
 
     }
 

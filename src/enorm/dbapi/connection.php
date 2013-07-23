@@ -17,16 +17,21 @@
  */
 namespace enorm\dbapi;
 
+require_once 'condition.php';
+require_once '../dbmodel/table.php';
+require_once '../dbmodel/record.php';
+use \enorm\dbmodel as model;
+
 interface Connection {
 
-    public function createTable($table);
+    public function createTable(model\Table $table);
 
-    public function create($table, $record);
+    public function create(model\Table $table, model\Record $record);
 
-    public function read($source, $targetInfo=null, $filter=null);
+    public function read($source, $targets=array(), Condition $condition=null);
 
-    public function update($table, $fields, $filter);
+    public function update(model\Table $table, $fields, Condition $condition);
 
-    public function delete($table, $filter);
+    public function delete(model\Table $table, $condition);
 
 }

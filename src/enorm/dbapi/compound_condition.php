@@ -15,10 +15,36 @@
  * limitations under the License.
  *
  */
-abstract class Filter {
+namespace enorm\dbapi;
 
-    public function __construct() {
+require_once 'condition.php';
+
+class CompoundCondition extends Condition
+{
+
+    public function __construct($condition_1, $condition_2)
+    {
+
+        parent::__construct();
+
+        $this->elements = array($condition_1, $condition_2);
 
     }
+
+    public function add($condition)
+    {
+
+        array_push($this->elements, $condition);
+
+    }
+
+    public function getElements()
+    {
+
+        return $this->elements;
+
+    }
+
+    protected $elements;
 
 }

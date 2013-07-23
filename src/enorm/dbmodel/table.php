@@ -114,7 +114,7 @@ class Table
         $fields = array_merge($this->keyfields, $this->datafields);
         $components = array();
         foreach ($fields as $field) {
-            array_push($components, new Component($field->getName(), $field->getType(), $field->isNullAllowed()));
+            array_push($components, new Component($field->getType(), $field->getName(), $field->isNullAllowed()));
         }
 
         return new Record($components);

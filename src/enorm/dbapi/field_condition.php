@@ -17,13 +17,13 @@
  */
 namespace enorm\dbapi;
 
-require_once 'filter.php';
+require_once 'condition.php';
 require_once '../dbmodel/field.php';
 require_once '../dbmodel/value.php';
 
 use enorm\dbmodel as model;
 
-class FieldFilter extends Filter
+class FieldCondition extends Condition
 {
 
     public function __construct(model\Field $field,

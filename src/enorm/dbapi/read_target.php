@@ -16,18 +16,36 @@
  *
  */
 
+namespace enorm\dbapi;
+
+require_once '../dbmodel/field.php';
+use \enorm\dbmodel\Field;
+
 abstract class ReadTarget {
 
     // Target categories:
     const FIELD = 1;
     const AGGREGATE = 2;
 
+    public function __construct($alias="")
+    {
+        $this->alias = $alias;
+    }
+
+    protected $alias;
+
 }
 
 class ReadTargetField extends ReadTarget {
 
-    public function __construct() {
+    public function __construct(Field $field, $alias="") {
+
+        parent::__construct($alias);
+
+        $this->field = $field;
 
     }
+
+    private $field;
 
 }

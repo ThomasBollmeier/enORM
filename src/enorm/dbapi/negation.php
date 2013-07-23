@@ -17,7 +17,7 @@
  */
 namespace enorm\dbapi;
 
-require_once 'filter.php';
+require_once 'condition.php';
 
 class Negation extends Filter
 {
