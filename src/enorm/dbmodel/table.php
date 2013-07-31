@@ -18,21 +18,20 @@
 
 namespace enorm\dbmodel;
 
+require_once 'source.php';
 require_once 'field.php';
 require_once 'record.php';
 
-class Table
+class Table extends Source
 {
-
-    public $name;
 
     public function __construct($db, $name)
     {
 
+        parent::__construct($name);
+
         $db->addTable($this);
         $this->db = $db;
-
-        $this->name = $name;
 
     }
 
@@ -102,9 +101,28 @@ class Table
         if ($pos < count($this->keyfields)) {
             return $this->keyfields[$pos];
         } else {
-            $pos -= count($this->keyfields);
-            return $this->datafields[$pos];
+            $idx = $pos - count($this->keyfields);
+            return $this->datafields[$idx];
         }
+
+    }
+
+    public function getFieldByName($name)
+    {
+
+        foreach ($this->keyfields as $field) {
+            if ($field->getName() == $name) {
+                return $field;
+            }
+        }
+
+        foreach ($this->datafields as $field) {
+            if ($field->getName() == $name) {
+                return $field;
+            }
+        }
+
+        return null;
 
     }
 

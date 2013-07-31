@@ -61,6 +61,44 @@ class FieldCondition extends Condition
 
 }
 
+class FieldParameterCondition extends Condition
+{
+
+    public function __construct(model\Field $field,
+                                FieldOperator $operator,
+                                Parameter $parameter
+    )
+    {
+
+        parent::__construct();
+
+        $this->field = $field;
+        $this->op = $operator;
+        $this->param = $parameter;
+
+    }
+
+    public function getField()
+    {
+        return $this->field;
+    }
+
+    public function getOperator()
+    {
+        return $this->op;
+    }
+
+    public function getValue()
+    {
+        return $this->param->getValue();
+    }
+
+    private $field;
+    private $op;
+    private $param;
+
+}
+
 abstract class FieldOperator
 {
 

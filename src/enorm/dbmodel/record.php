@@ -22,6 +22,11 @@ require_once "values.php";
 class Record implements \Iterator
 {
 
+    /**
+     * Constructor
+     *
+     * @param $components -> array of Component objects
+     */
     public function __construct($components)
     {
         $this->components = $components;
@@ -46,6 +51,11 @@ class Record implements \Iterator
 
         }
 
+    }
+
+    public function getNumComponents()
+    {
+        return count($this->components);
     }
 
     public function setBoolean($componentNameOrIdx, $boolval)

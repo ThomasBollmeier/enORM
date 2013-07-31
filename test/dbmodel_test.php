@@ -196,8 +196,10 @@ class DbModelTest extends PHPUnit_Framework_TestCase
 
         $record = new db\Record($components);
 
+        $this->assertEquals(2, $record->getNumComponents());
+
         $this->assertEquals("", $record->name);
-        $this->assertEquals(null, $record->getValue(1));
+        $this->assertEquals(null, $record->getContent(1));
 
         $record->setContent(0, "Mustermann");
         $record->setContent(1, 42);
