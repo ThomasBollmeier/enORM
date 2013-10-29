@@ -18,12 +18,23 @@
 namespace enorm\dbapi;
 
 require_once 'condition.php';
-require_once '../dbmodel/table.php';
-require_once '../dbmodel/record.php';
+require_once 'enorm/dbmodel/table.php';
+require_once 'enorm/dbmodel/record.php';
 use \enorm\dbmodel as model;
 
 interface Connection
 {
+    /**
+     * Check whether connection is OK
+     * @return boolean
+     */
+    public function isOK();
+
+    /**
+     * @param $tableName
+     * @return boolean
+     */
+    public function existsTable($tableName);
 
     /**
      * @param model\Table $table
@@ -59,7 +70,7 @@ interface Connection
      * @param $condition
      * @return boolean
      */
-    public function delete(model\Table $table, $condition);
+    public function delete(model\Table $table, Condition $condition = null);
 
     /**
      * @param model\Table $table
@@ -121,20 +132,20 @@ class FieldValueParam extends FieldValue
 
 interface PreparedStatement
 {
-    function bind($paramName, $value);
+    public function bind($paramName, $value);
 
-    function execute();
+    public function execute();
 }
 
 
 interface PreparedReadStatement
 {
-    function bind($paramName, $value);
+    public function bind($paramName, $value);
 
     /**
      * @return Cursor
      */
-    function read();
+    public function read();
 }
 
 interface Cursor
@@ -142,5 +153,5 @@ interface Cursor
     /**
      * @return model\Record
      */
-    function getNextRecord();
+    public function getNextRecord();
 }

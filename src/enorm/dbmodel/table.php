@@ -129,13 +129,20 @@ class Table extends Source
     public function createRecord()
     {
 
+        return new Record($this->getComponents());
+
+    }
+
+    public function getComponents()
+    {
+
         $fields = array_merge($this->keyfields, $this->datafields);
         $components = array();
         foreach ($fields as $field) {
             array_push($components, new Component($field->getType(), $field->getName(), $field->isNullAllowed()));
         }
 
-        return new Record($components);
+        return $components;
 
     }
 

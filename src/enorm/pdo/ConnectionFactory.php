@@ -15,29 +15,29 @@
  * limitations under the License.
  *
  */
-namespace enorm\dbapi;
 
-require_once 'condition.php';
+namespace enorm\pdo;
 
-class Negation extends Condition
-{
+require_once("enorm/pdo/mysql/SqlBuilder.php");
+require_once("enorm/pdo/Connection.php");
 
-    public function __construct($filter)
+class ConnectionFactory {
+
+    public function connectMySql(
+        $host,
+        $database,
+        $user,
+        $password,
+        $port = -1
+    )
     {
-
-        parent::__construct();
-
-        $this->filter = $filter;
-
+        $builder = new mysql\SqlBuilder();
+        if ($port > 0) {
+            $dsn = sprintf("mysql:host=%s;port=%d;dbname=%s", $host, $port, $database);
+        } else {
+            $dsn = sprintf("mysql:host=%s;dbname=%s", $host, $database);
+        }
+        return new Connection($builder, $dsn, $user, $password);
     }
 
-    public function getFilter()
-    {
-
-        return $this->filter;
-
-    }
-
-    private $filter;
-
-}
+} 

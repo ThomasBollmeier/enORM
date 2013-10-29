@@ -16,46 +16,17 @@
  *
  */
 
-namespace enorm\dbapi;
+namespace enorm\pdo\mysql;
 
-require_once 'enorm/dbmodel/field.php';
-use \enorm\dbmodel\Field;
+require_once("enorm/pdo/SqlBuilder.php");
+use enorm\pdo\SqlBuilder as Builder;
+use enorm\dbmodel as model;
 
-abstract class ReadTarget {
+class SqlBuilder extends Builder {
 
-    // Target categories:
-    const FIELD = 1;
-    const AGGREGATE = 2;
-
-    public function __construct($alias="")
+    public function createTableStmt(model\Table $table)
     {
-        $this->alias = $alias;
+        return "";
     }
-
-    public function getAlias()
-    {
-        return $this->alias;
-    }
-
-    protected $alias;
-
-}
-
-class ReadTargetField extends ReadTarget {
-
-    public function __construct(Field $field, $alias="") {
-
-        parent::__construct($alias);
-
-        $this->field = $field;
-
-    }
-
-    public function getField()
-    {
-        return $this->field;
-    }
-
-    private $field;
 
 }

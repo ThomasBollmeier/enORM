@@ -18,8 +18,8 @@
 namespace enorm\dbapi;
 
 require_once 'condition.php';
-require_once '../dbmodel/field.php';
-require_once '../dbmodel/value.php';
+require_once 'enorm/dbmodel/field.php';
+require_once 'enorm/dbmodel/values.php';
 
 use enorm\dbmodel as model;
 
@@ -27,7 +27,7 @@ class FieldCondition extends Condition
 {
 
     public function __construct(model\Field $field,
-                                FieldOperator $operator,
+                                $operator,
                                 model\Value $value
     )
     {
@@ -65,7 +65,7 @@ class FieldParameterCondition extends Condition
 {
 
     public function __construct(model\Field $field,
-                                FieldOperator $operator,
+                                $operator,
                                 Parameter $parameter
     )
     {
