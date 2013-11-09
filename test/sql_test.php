@@ -27,6 +27,7 @@ use enorm\dbmodel as db;
 require_once 'enorm/dbapi/field_condition.php';
 require_once 'enorm/dbapi/conjunction.php';
 require_once 'enorm/dbapi/connection.php';
+require_once 'enorm/dbapi/read_target.php';
 use enorm\dbapi as api;
 
 require_once 'enorm/pdo/SqlBuilder.php';
@@ -108,7 +109,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
             )
         );
 
-        $delCondition = new api\FieldCondition(
+        $idCondition = new api\FieldCondition(
             $this->table->getFieldByName("id"),
             api\FieldOperator::EQ,
             new db\IntegerValue(42)
@@ -118,7 +119,35 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
             "DELETE FROM persons WHERE id = 42",
             $builder->deleteStmt(
                 $this->table,
-                $delCondition
+                $idCondition
+            )
+        );
+
+        $targets = array();
+
+        $this->assertEquals(
+            "SELECT * FROM persons WHERE id = 42",
+            $builder->selectStmt(
+                $this->table,
+                $targets,
+                $idCondition
+            )
+        );
+
+        array_push(
+            $targets,
+            new api\ReadTargetField(
+                $this->table->getFieldByName("name"),
+                "FamilyName"
+            )
+        );
+
+        $this->assertEquals(
+            "SELECT name AS FamilyName FROM persons WHERE id = 42",
+            $builder->selectStmt(
+                $this->table,
+                $targets,
+                $idCondition
             )
         );
 

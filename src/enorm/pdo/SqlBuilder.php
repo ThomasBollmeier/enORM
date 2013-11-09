@@ -75,7 +75,7 @@ class SqlBuilder
         }
 
         $sql = sprintf("INSERT INTO %s (%s) VALUES (%s)",
-            $table->name,
+            $table->getName(),
             $columnNames,
             $values
         );
@@ -87,7 +87,7 @@ class SqlBuilder
     public function updateStmt(model\Table $table, $fieldValues, Condition $condition)
     {
 
-        $sql = "UPDATE " . $table->name . " SET\n";
+        $sql = "UPDATE " . $table->getName() . " SET\n";
         $changes = "";
         foreach ($fieldValues as $fval) {
             $line = "\t" . $fval->field->getName() . " = ";
@@ -133,7 +133,7 @@ class SqlBuilder
             }
         }
 
-        $sql = sprintf("SELECT %s FROM %s", $targetsStr, $source->name);
+        $sql = sprintf("SELECT %s FROM %s", $targetsStr, $source->getName());
 
         if ($condition) {
             $sql .= " WHERE ".$this->conditionStr($condition);
@@ -144,7 +144,7 @@ class SqlBuilder
 
     public function deleteStmt(model\Table $table, Condition $condition = null)
     {
-        $sql = "DELETE FROM ".$table->name;
+        $sql = "DELETE FROM ".$table->getName();
         if ($condition) {
             $sql .= " WHERE ".$this->conditionStr($condition);
         }

@@ -146,6 +146,13 @@ class Table extends Source
 
     }
 
+    public function __get($name)
+    {
+
+        return $this->getFieldByName($name);
+
+    }
+
     private function existsName($name)
     {
 

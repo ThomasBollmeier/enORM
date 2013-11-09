@@ -53,18 +53,13 @@ class DbConnectionTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($conn->create($persons, $record));
 
-        $targets = array();
-        array_push(
-            $targets,
+        $targets = array(
             new \enorm\dbapi\ReadTargetField(
-                $persons->getFieldByName("id"),
+                $persons->id,
                 "PersonId"
-            )
-        );
-        array_push(
-            $targets,
+            ),
             new \enorm\dbapi\ReadTargetField(
-                $persons->getFieldByName("name"),
+                $persons->name,
                 "FamilyName"
             )
         );
@@ -73,7 +68,7 @@ class DbConnectionTest extends PHPUnit_Framework_TestCase
             $persons,
             $targets,
             new \enorm\dbapi\FieldCondition(
-                $persons->getFieldByName("first_name"),
+                $persons->first_name,
                 \enorm\dbapi\FieldOperator::EQ,
                 new \enorm\dbmodel\StringValue("Herbert")
             )

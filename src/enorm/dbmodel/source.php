@@ -21,16 +21,23 @@ namespace enorm\dbmodel;
 abstract class Source
 {
 
-    public $name;
-
     public function __construct($name)
     {
 
-        $this->name = $name;
+        $this->_properties = array(
+            "name" => $name
+        );
 
     }
 
+    public function getName()
+    {
+        return $this->_properties["name"];
+    }
+
     abstract public function createRecord();
+
+    private $_properties;
 
 }
 
