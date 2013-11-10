@@ -20,7 +20,9 @@ namespace enorm\core;
 require_once("enorm/dbapi/conjunction.php");
 require_once("enorm/dbapi/field_condition.php");
 require_once("enorm/dbmodel/values.php");
+require_once("enorm/core/PersistentObject.php");
 
+use enorm\dbapi\Disjunction;
 use \enorm\dbapi\FieldCondition;
 use \enorm\dbapi\FieldOperator;
 use \enorm\dbapi\Conjunction;
@@ -72,27 +74,15 @@ class PersObjManager {
             );
         }
 
-        $numFields = count($conditions);
-        $condition = null;
-        if ($numFields < 2) {
-            $condition = $conditions[0];
-        } else {
-            for ($i=0; $i < $numFields; $i++) {
-                if ($i == 2) {
-                    $condition = new Conjunction($conditions[0], $conditions[1]);
-                } else if ($i > 2) {
-                    $condition->add($conditions[$i]);
-                }
-            }
-        }
-
         $rowsPerTable = array(
             $headerTabName => array()
         );
-        $cursor = $conn->read($headerTab, array(), $condition);
+        $cursor = $conn->read($headerTab, array(), Conjunction::create($conditions));
         while ($record = $cursor->getNextRecord()) {
             array_push($rowsPerTable[$headerTabName], $record);
         }
+
+        $this->readDependentTables($conn, $db, $rowsPerTable);
 
         $object = new $this->className();
         $object->setAttrsFromDbData($rowsPerTable);
@@ -118,11 +108,68 @@ class PersObjManager {
     private static $instances = array();
     private $className; // absolute class name - e.g. \enorm\core\PersObjManager
     private $headerTabInfo;
+    private $keyMapping;
 
     private function __construct($className)
     {
         $this->className = $className;
         $this->headerTabInfo = forward_static_call(array($className, "getHeaderTabInfo"));
+        $this->keyMapping = forward_static_call(array($className, "getKeyMapping"));
+    }
+
+    private function readDependentTables($conn, $db, &$rowsPerTable)
+    {
+        $helper = new TableDependencyHelper($this->keyMapping);
+        $depTableNames = $helper->getTablesSortedByLevel();
+
+        foreach ($depTableNames as $tableName) {
+
+            $keyMaps = $this->keyMapping[$tableName];
+            $depTable = $db->getTable($tableName);
+            $conditions = array();
+
+            foreach ($keyMaps as $keyMap) {
+                array_push(
+                    $conditions,
+                    $this->createConditionFromKeyMap(
+                        $keyMap,
+                        $depTable,
+                        $rowsPerTable
+                    )
+                );
+            }
+
+            // Now select...
+            $rowsPerTable[$tableName] = array();
+            $cursor = $conn->read($depTable, array(), Conjunction::create($conditions));
+            while ($record = $cursor->getNextRecord()) {
+                array_push($rowsPerTable[$tableName], $record);
+            }
+
+        }
+
+    }
+
+    private function createConditionFromKeyMap($keyMap, $depTable, $rowsPerTable)
+    {
+
+        $fieldName = $keyMap->targetFieldName;
+        $rows = $rowsPerTable[$keyMap->sourceTabName];
+        $conditions = array();
+
+        foreach ($rows as $row) {
+            array_push(
+                $conditions,
+                new FieldCondition(
+                    $depTable->$fieldName,
+                    FieldOperator::EQ,
+                    $row->getValue($keyMap->sourceFieldName)
+                )
+            );
+        }
+
+        return Disjunction::create($conditions);
+
     }
 
 }

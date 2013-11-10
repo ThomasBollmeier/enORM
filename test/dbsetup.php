@@ -15,6 +15,11 @@ function createTestDatabase() {
     $table->addDataField("birthday", db\DateType::get());
     $table->addDataField("is_developer", db\BooleanType::get());
 
+    $table = new enorm\dbmodel\Table($db, "hobbies");
+    $table->addKeyField("person_id", db\IntegerType::get());
+    $table->addKeyField("hobby_num", db\IntegerType::get());
+    $table->addDataField("name", new db\VarCharType(50));
+
     return $db;
 
 }

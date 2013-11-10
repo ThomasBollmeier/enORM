@@ -24,6 +24,7 @@ use \enorm\dbmodel as model;
 
 interface Connection
 {
+
     /**
      * Check whether connection is OK
      * @return boolean

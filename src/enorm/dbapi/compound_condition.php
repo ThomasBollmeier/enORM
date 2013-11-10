@@ -19,8 +19,44 @@ namespace enorm\dbapi;
 
 require_once 'condition.php';
 
-class CompoundCondition extends Condition
+abstract class CompoundCondition extends Condition
 {
+
+    public static function create($conditions)
+    {
+        $numConditions = count($conditions);
+
+        if ($numConditions >= 2) {
+
+            $condition = null;
+            $condition_1 = null;
+
+            for ($i=0; $i<$numConditions; $i++) {
+                switch ($i) {
+                    case 0:
+                        $condition_1 = $conditions[0];
+                        break;
+                    case 1:
+                        $condition = new static($condition_1, $conditions[$i]);
+                        break;
+                    default:
+                        $condition.add($conditions[$i]);
+                }
+            }
+
+            return $condition;
+
+        } else if ($numConditions == 1) {
+
+            return $conditions[0];
+
+        } else {
+
+            return null;
+
+        }
+
+    }
 
     public function __construct($condition_1, $condition_2)
     {

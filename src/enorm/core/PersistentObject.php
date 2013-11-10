@@ -67,4 +67,116 @@ class KeyMapInfo
     public $sourceTabName;
     public $sourceFieldName;
     public $targetFieldName;
+
+    public static function create($targetField, $sourceTab, $sourceField)
+    {
+        $keyMap = new KeyMapInfo();
+        $keyMap->targetFieldName = $targetField;
+        $keyMap->sourceTabName = $sourceTab;
+        $keyMap->sourceFieldName = $sourceField;
+
+        return $keyMap;
+    }
+}
+
+class TableDependencyHelper
+{
+    public function __construct($keyMapsPerTable)
+    {
+
+        $this->deps = array();
+
+        foreach ($keyMapsPerTable as $tableName => $keyMaps) {
+
+            $dep = new TableDepInfo();
+            $dep->tableName = $tableName;
+            $dep->sourceTables = array();
+            $dep->level = null; // not determined yet
+
+            foreach ($keyMaps as $keyMap) {
+                array_push($dep->sourceTables, $keyMap->sourceTabName);
+            }
+
+            $this->deps[$tableName] = $dep;
+
+        }
+
+    }
+
+    public function getTablesSortedByLevel()
+    {
+        $tableNames = array();
+
+        foreach ($this->deps as $tableName => $dep) {
+            array_push($tableNames, $tableName);
+        }
+
+        uasort($tableNames, function ($name1, $name2) {
+            $level1 = $this->getLevel($name1);
+            $level2 = $this->getLevel($name2);
+            if ($level1 == $level2) {
+                return 0;
+            }
+
+            return $level1 > $level2 ? 1 : -1;
+        });
+
+        return $tableNames;
+
+    }
+
+    public function getLevel($tableName)
+    {
+
+        $this->currTables = array();
+
+        return $this->_getLevel($tableName);
+
+    }
+
+    private $deps;
+    private $currTables;
+
+    private function _getLevel($tableName)
+    {
+
+        if (!array_key_exists($tableName, $this->deps)) {
+            return 0;
+        }
+
+        $dep = $this->deps[$tableName];
+
+        if ($dep->level === null) {
+
+            if (array_key_exists($tableName, $this->currTables)) {
+                throw new \Exception("Cyclic dependency found!");
+            }
+
+            $this->currTables[$tableName] = TRUE;
+            $maxLevel = 0;
+
+            foreach ($dep->sourceTables as $sourceTable) {
+                $level = $this->_getLevel($sourceTable);
+                if ($level > $maxLevel) {
+                    $maxLevel = $level;
+                }
+            }
+
+            $dep->level = $maxLevel + 1;
+
+            unset($this->currTables[$tableName]);
+
+        }
+
+        return $dep->level;
+
+    }
+
+}
+
+class TableDepInfo
+{
+    public $tableName;
+    public $sourceTables;
+    public $level;
 }

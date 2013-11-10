@@ -26,12 +26,14 @@ require_once("enorm/dbapi/read_target.php");
 use \enorm\core\PersObjManager;
 use \enorm\core\PersistentObject;
 use \enorm\core\KeyFieldsInfo;
+use \enorm\core\KeyMapInfo;
 use \enorm\dbapi\ReadTargetField;
 
 class Person implements PersistentObject {
 
     public $FirstName;
     public $FamilyName;
+    public $Hobbies = array();
 
     /**
      * Get the header name and list(s) of header key fields that define
@@ -53,7 +55,11 @@ class Person implements PersistentObject {
      */
     public static function getKeyMapping()
     {
-        return null;
+        return array(
+            self::HOBBIES_TABLE => array(
+                KeyMapInfo::create("person_id", self::HEADER_TABLE, "id")
+            )
+        );
     }
 
     /**
@@ -68,6 +74,14 @@ class Person implements PersistentObject {
         $this->header = $headerRows[0];
         $this->FirstName = $this->header->first_name;
         $this->FamilyName = $this->header->name;
+
+        $this->hobbyRows = $rowsPerTable[self::HOBBIES_TABLE];
+        asort($this->hobbyRows);
+        $this->Hobbies = array();
+        foreach ($this->hobbyRows as $row) {
+            array_push($this->Hobbies, $row->name);
+        }
+
     }
 
     /**
@@ -83,7 +97,9 @@ class Person implements PersistentObject {
     }
 
     const HEADER_TABLE = "persons";
+    const HOBBIES_TABLE = "hobbies";
     private $header = null;
+    private $hobbyRows;
 
 }
 
@@ -109,9 +125,11 @@ class PersObjManagerTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($conn->isOK());
 
         $persons = $this->testDb->getTable("persons");
+        $hobbies = $this->testDb->getTable("hobbies");
 
         // Clean up
         $conn->delete($persons);
+        $conn->delete($hobbies);
 
         // Insert test record(s)
         $record = $persons->createRecord();
@@ -123,6 +141,16 @@ class PersObjManagerTest extends PHPUnit_Framework_TestCase
         // Get Id:
         $cursor = $conn->read($persons, array(new ReadTargetField($persons->id, "PersonId")));
         $id = $cursor->getNextRecord()->PersonId;
+
+        $record = $hobbies->createRecord();
+        $record->person_id = $id;
+        $record->hobby_num = 1;
+        $record->name = "Laufen";
+        $this->assertTrue($conn->create($hobbies, $record));
+
+        $record->hobby_num = 2;
+        $record->name = "Android-Programmierung";
+        $this->assertTrue($conn->create($hobbies, $record));
 
         // Load...
         $manager = PersObjManager::getManager("\\Person");
@@ -150,6 +178,12 @@ class PersObjManagerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             "Testmüller",
             $this->personObj->FamilyName
+        );
+        $this->assertEquals(
+            array(
+                "Laufen", "Android-Programmierung"
+            ),
+            $this->personObj->Hobbies
         );
 
         unset($conn);
