@@ -4,6 +4,10 @@
 	"version": "0.9.0",
 	"description": "Yet another object relational mapper for PHP",
 
+	"require": {
+		"php": "^7.0"
+	},
+
 	"autoload": {
         	"psr-4": {
             		"tbollmeier\\enorm\\": "src/"
