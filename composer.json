@@ -4,6 +4,15 @@
 	"version": "0.9.0",
 	"description": "Yet another object relational mapper for PHP",
 
+    "authors": [
+      {
+        "name": "Thomas Bollmeier",
+        "homepage": "http://tbollmeier.de"
+      }
+    ],
+
+    "license": "Apache-2.0",
+
 	"require": {
 		"php": "^7.0"
 	},
