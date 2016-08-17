@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,8 @@
  *
  */
 
-require_once '../src/enorm/dbmodel/types.php';
-require_once '../src/enorm/dbmodel/values.php';
-require_once '../src/enorm/dbmodel/Table.php';
-require_once '../src/enorm/dbmodel/Database.php';
-require_once '../src/enorm/dbmodel/Record.php';
-use enorm\dbmodel as db;
+use tbollmeier\enorm\dbmodel as model;
+
 
 class DbModelTest extends PHPUnit_Framework_TestCase
 {
@@ -29,45 +25,45 @@ class DbModelTest extends PHPUnit_Framework_TestCase
     public function testTypes()
     {
 
-        $type = db\IntegerType::get();
+        $type = model\IntegerType::get();
         $this->assertTrue($type !== NULL);
-        $this->assertEquals(db\Type::INTEGER, $type->getCategory());
-        $type2 = db\IntegerType::get();
+        $this->assertEquals(model\Type::INTEGER, $type->getCategory());
+        $type2 = model\IntegerType::get();
         $this->assertTrue($type === $type2);
 
-        $type = new db\DecimalType(5, 2);
+        $type = new model\DecimalType(5, 2);
         $this->assertTrue($type !== NULL);
-        $this->assertEquals(db\Type::DECIMAL, $type->getCategory());
+        $this->assertEquals(model\Type::DECIMAL, $type->getCategory());
         $this->assertEquals(5, $type->getLength());
         $this->assertEquals(2, $type->getDigits());
 
-        $type = db\BooleanType::get();
+        $type = model\BooleanType::get();
         $this->assertTrue($type !== NULL);
-        $this->assertEquals(db\Type::BOOLEAN, $type->getCategory());
-        $type2 = db\BooleanType::get();
+        $this->assertEquals(model\Type::BOOLEAN, $type->getCategory());
+        $type2 = model\BooleanType::get();
         $this->assertTrue($type === $type2);
 
-        $type = db\StringType::get();
+        $type = model\StringType::get();
         $this->assertTrue($type !== NULL);
-        $this->assertEquals(db\Type::STRING, $type->getCategory());
-        $type2 = db\StringType::get();
+        $this->assertEquals(model\Type::STRING, $type->getCategory());
+        $type2 = model\StringType::get();
         $this->assertTrue($type === $type2);
 
-        $type = new db\VarCharType(255);
+        $type = new model\VarCharType(255);
         $this->assertTrue($type !== NULL);
-        $this->assertEquals(db\Type::VARCHAR, $type->getCategory());
+        $this->assertEquals(model\Type::VARCHAR, $type->getCategory());
         $this->assertEquals(255, $type->getLength());
 
-        $type = db\DateType::get();
+        $type = model\DateType::get();
         $this->assertTrue($type !== NULL);
-        $this->assertEquals(db\Type::DATE, $type->getCategory());
-        $type2 = db\DateType::get();
+        $this->assertEquals(model\Type::DATE, $type->getCategory());
+        $type2 = model\DateType::get();
         $this->assertTrue($type === $type2);
 
-        $type = db\TimeType::get();
+        $type = model\TimeType::get();
         $this->assertTrue($type !== NULL);
-        $this->assertEquals(db\Type::TIME, $type->getCategory());
-        $type2 = db\TimeType::get();
+        $this->assertEquals(model\Type::TIME, $type->getCategory());
+        $type2 = model\TimeType::get();
         $this->assertTrue($type === $type2);
 
     }
@@ -75,57 +71,57 @@ class DbModelTest extends PHPUnit_Framework_TestCase
     public function testValues()
     {
 
-        $value = new db\BooleanValue(TRUE);
+        $value = new model\BooleanValue(TRUE);
         $this->assertTrue($value !== NULL);
-        $this->assertEquals(db\Type::BOOLEAN, $value->getType()->getCategory());
+        $this->assertEquals(model\Type::BOOLEAN, $value->getType()->getCategory());
         $this->assertEquals(TRUE, $value->getContent());
         $value->setContent(FALSE);
         $this->assertEquals(FALSE, $value->getContent());
 
-        $value = new db\IntegerValue(42);
+        $value = new model\IntegerValue(42);
         $this->assertTrue($value !== NULL);
-        $this->assertEquals(db\Type::INTEGER, $value->getType()->getCategory());
+        $this->assertEquals(model\Type::INTEGER, $value->getType()->getCategory());
         $this->assertEquals(42, $value->getContent());
         $value->setContent(666);
         $this->assertEquals(666, $value->getContent());
 
-        $value = new db\StringValue("Hallo Welt");
+        $value = new model\StringValue("Hallo Welt");
         $this->assertTrue($value !== NULL);
-        $this->assertEquals(db\Type::STRING, $value->getType()->getCategory());
+        $this->assertEquals(model\Type::STRING, $value->getType()->getCategory());
         $this->assertEquals("Hallo Welt", $value->getContent());
 
-        $value = new db\VarCharValue(new db\VarCharType(5), "Hallo Welt");
+        $value = new model\VarCharValue(new model\VarCharType(5), "Hallo Welt");
         $this->assertTrue($value !== NULL);
-        $this->assertEquals(db\Type::VARCHAR, $value->getType()->getCategory());
+        $this->assertEquals(model\Type::VARCHAR, $value->getType()->getCategory());
         $this->assertEquals("Hallo", $value->getContent());
         $value->setContent("ABCDEFG");
         $this->assertEquals("ABCDE", $value->getContent());
 
-        $value = new db\DateValue(2013, 12, 31);
+        $value = new model\DateValue(2013, 12, 31);
         $this->assertTrue($value !== NULL);
-        $this->assertEquals(db\Type::DATE, $value->getType()->getCategory());
+        $this->assertEquals(model\Type::DATE, $value->getType()->getCategory());
         $this->assertEquals(2013, $value->getYear());
         $this->assertEquals(12, $value->getMonth());
         $this->assertEquals(31, $value->getDay());
 
-        $value = new db\DateValue();
+        $value = new model\DateValue();
         $this->assertTrue($value !== NULL);
-        $this->assertEquals(db\Type::DATE, $value->getType()->getCategory());
+        $this->assertEquals(model\Type::DATE, $value->getType()->getCategory());
         $value->setContent('2013-07-21');
         $this->assertEquals(2013, $value->getYear());
         $this->assertEquals(7, $value->getMonth());
         $this->assertEquals(21, $value->getDay());
 
-        $value = new db\TimeValue(12, 30, 45);
+        $value = new model\TimeValue(12, 30, 45);
         $this->assertTrue($value !== NULL);
-        $this->assertEquals(db\Type::TIME, $value->getType()->getCategory());
+        $this->assertEquals(model\Type::TIME, $value->getType()->getCategory());
         $this->assertEquals(12, $value->getHour());
         $this->assertEquals(30, $value->getMinute());
         $this->assertEquals(45, $value->getSecond());
 
-        $value = new db\TimeValue();
+        $value = new model\TimeValue();
         $this->assertTrue($value !== NULL);
-        $this->assertEquals(db\Type::TIME, $value->getType()->getCategory());
+        $this->assertEquals(model\Type::TIME, $value->getType()->getCategory());
         $value->setContent('15:50:00');
         $this->assertEquals(15, $value->getHour());
         $this->assertEquals(50, $value->getMinute());
@@ -136,30 +132,30 @@ class DbModelTest extends PHPUnit_Framework_TestCase
     public function testTable()
     {
 
-        $db = new db\Database("demo");
+        $db = new model\Database("demo");
 
-        $table = new db\Table($db, "persons");
+        $table = new model\Table($db, "persons");
 
-        $table->addKeyField("id", db\IntegerType::get());
+        $table->addKeyField("id", model\IntegerType::get());
         try {
-            $table->addKeyField("id", db\IntegerType::get());
+            $table->addKeyField("id", model\IntegerType::get());
             $excOccurred = FALSE;
         } catch (\Exception $error) {
             $excOccurred = TRUE;
         }
         $this->assertTrue($excOccurred);
 
-        $table->addDataField("name", new db\VarCharType(50));
+        $table->addDataField("name", new model\VarCharType(50));
         try {
-            $table->addDataField("name", new db\VarCharType(50));
+            $table->addDataField("name", new model\VarCharType(50));
             $excOccurred = FALSE;
         } catch (\Exception $error) {
             $excOccurred = TRUE;
         }
         $this->assertTrue($excOccurred);
 
-        $table->addDataField("first_name", new db\VarCharType(50), TRUE);
-        $table->addDataField("birth_day", db\DateType::get(), TRUE);
+        $table->addDataField("first_name", new model\VarCharType(50), TRUE);
+        $table->addDataField("birth_day", model\DateType::get(), TRUE);
 
         $this->assertEquals(4, count($table->getFields()));
 
@@ -190,11 +186,11 @@ class DbModelTest extends PHPUnit_Framework_TestCase
     {
 
         $components = array(
-            new db\Component(db\StringType::get(), "name"),
-            new db\Component(db\IntegerType::get(), "", TRUE)
+            new model\Component(model\StringType::get(), "name"),
+            new model\Component(model\IntegerType::get(), "", TRUE)
         );
 
-        $record = new db\Record($components);
+        $record = new model\Record($components);
 
         $this->assertEquals(2, $record->getNumComponents());
 
@@ -210,4 +206,3 @@ class DbModelTest extends PHPUnit_Framework_TestCase
     }
 
 }
-

@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeie.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
  *
  */
 
-namespace enorm\pdo;
+namespace tbollmeier\enorm\pdo;
 
-require_once("enorm/pdo/mysql/SqlBuilder.php");
-require_once("enorm/pdo/Connection.php");
+use tbollmeier\enorm\pdo\mysql as mysql;
+
 
 class ConnectionFactory {
 
@@ -28,16 +28,18 @@ class ConnectionFactory {
         $database,
         $user,
         $password,
-        $port = -1
-    )
+        $port = -1)
     {
         $builder = new mysql\SqlBuilder();
+
         if ($port > 0) {
             $dsn = sprintf("mysql:host=%s;port=%d;dbname=%s", $host, $port, $database);
         } else {
             $dsn = sprintf("mysql:host=%s;dbname=%s", $host, $database);
         }
+
         return new Connection($builder, $dsn, $user, $password);
+
     }
 
 } 

@@ -1,24 +1,23 @@
 <?php
 
-require_once("enorm/dbmodel/Database.php");
-require_once("enorm/dbmodel/Table.php");
-use enorm\dbmodel as db;
+use tbollmeier\enorm\dbmodel as model;
+
 
 function createTestDatabase() {
 
-    $db = new enorm\dbmodel\Database("test");
+    $db = new model\Database("enormtest");
 
-    $table = new enorm\dbmodel\Table($db, "persons");
-    $table->addKeyField("id", db\IntegerType::get());
-    $table->addDataField("name", new db\VarCharType(50));
-    $table->addDataField("first_name", new db\VarCharType(50));
-    $table->addDataField("birthday", db\DateType::get());
-    $table->addDataField("is_developer", db\BooleanType::get());
+    $table = new model\Table($db, "persons");
+    $table->addKeyField("id", model\IntegerType::get());
+    $table->addDataField("name", new model\VarCharType(50));
+    $table->addDataField("first_name", new model\VarCharType(50));
+    $table->addDataField("birthday", model\DateType::get());
+    $table->addDataField("is_developer", model\BooleanType::get());
 
-    $table = new enorm\dbmodel\Table($db, "hobbies");
-    $table->addKeyField("person_id", db\IntegerType::get());
-    $table->addKeyField("hobby_num", db\IntegerType::get());
-    $table->addDataField("name", new db\VarCharType(50));
+    $table = new model\Table($db, "hobbies");
+    $table->addKeyField("person_id", model\IntegerType::get());
+    $table->addKeyField("hobby_num", model\IntegerType::get());
+    $table->addDataField("name", new model\VarCharType(50));
 
     return $db;
 

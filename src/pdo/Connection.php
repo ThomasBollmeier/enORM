@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,13 @@
  *
  */
 
-namespace enorm\pdo;
+namespace tbollmeier\enorm\pdo;
 
-use enorm\dbapi\Condition;
-use enorm\dbapi\PreparedReadStatement;
-use enorm\dbapi\PreparedStatement;
-use enorm\dbmodel as model;
+use tbollmeier\enorm\dbapi as api;
+use tbollmeier\enorm\dbmodel as model;
 
-require_once("enorm/dbapi/Connection.php");
-require_once("Cursor.php");
 
-class Connection implements \enorm\dbapi\Connection
+class Connection implements api\Connection
 {
 
     public function __construct(SqlBuilder $sqlbuilder, $dsn, $user = "", $password = "")
@@ -87,10 +83,10 @@ class Connection implements \enorm\dbapi\Connection
     /**
      * @param model\Source $source
      * @param array $targets
-     * @param Condition $condition
+     * @param api\Condition $condition
      * @return Cursor
      */
-    public function read(model\Source $source, $targets = array(), Condition $condition = null)
+    public function read(model\Source $source, $targets = array(), api\Condition $condition = null)
     {
         $sql = $this->sqlbuilder->selectStmt($source, $targets, $condition);
         $stmt = $this->pdo->query($sql);
@@ -110,10 +106,10 @@ class Connection implements \enorm\dbapi\Connection
     /**
      * @param model\Table $table
      * @param $fieldValues
-     * @param Condition $condition
+     * @param api\Condition $condition
      * @return boolean
      */
-    public function update(model\Table $table, $fieldValues, Condition $condition)
+    public function update(model\Table $table, $fieldValues, api\Condition $condition)
     {
         $sql = $this->sqlbuilder->updateStmt($table, $fieldValues, $condition);
         $numRows = $this->pdo->exec($sql);
@@ -125,7 +121,7 @@ class Connection implements \enorm\dbapi\Connection
      * @param $condition
      * @return boolean
      */
-    public function delete(model\Table $table, Condition $condition = null)
+    public function delete(model\Table $table, api\Condition $condition = null)
     {
         $sql = $this->sqlbuilder->deleteStmt($table, $condition);
         $numRows = $this->pdo->exec($sql);
@@ -134,8 +130,8 @@ class Connection implements \enorm\dbapi\Connection
 
     /**
      * @param model\Table $table
-     * @param array of FieldValueParams $fieldValueParams
-     * @return PreparedStatement
+     * @param api\FieldValueParam[] $fieldValueParams
+     * @return api\PreparedStatement
      */
     public function prepareCreate(model\Table $table, $fieldValueParams)
     {
@@ -145,10 +141,12 @@ class Connection implements \enorm\dbapi\Connection
     /**
      * @param model\Source $source
      * @param array $targets
-     * @param Condition $condition
-     * @return PreparedReadStatement
+     * @param api\Condition $condition
+     * @return api\PreparedReadStatement
      */
-    public function prepareRead(model\Source $source, $targets = array(), Condition $condition = null)
+    public function prepareRead(model\Source $source,
+                                $targets = array(),
+                                api\Condition $condition = null)
     {
         // TODO: Implement prepareRead() method.
     }
@@ -156,20 +154,22 @@ class Connection implements \enorm\dbapi\Connection
     /**
      * @param model\Table $table
      * @param array of FieldValueParams $fieldValueParams
-     * @param Condition $condition
-     * @return PreparedStatement
+     * @param api\Condition $condition
+     * @return api\PreparedStatement
      */
-    public function prepareUpdate(model\Table $table, $fieldValueParams, Condition $condition)
+    public function prepareUpdate(model\Table $table,
+                                  $fieldValueParams,
+                                  api\Condition $condition)
     {
         // TODO: Implement prepareUpdate() method.
     }
 
     /**
      * @param model\Table $table
-     * @param $condition
-     * @return PreparedStatement
+     * @param api\Condition $condition
+     * @return api\PreparedStatement
      */
-    public function prepareDelete(model\Table $table, $condition)
+    public function prepareDelete(model\Table $table, api\Condition $condition)
     {
         // TODO: Implement prepareDelete() method.
     }

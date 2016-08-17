@@ -23,18 +23,14 @@ class TableDependencyHelper
     public function __construct($keyMapsPerTable)
     {
 
-        $this->deps = array();
+        $this->deps = [];
 
         foreach ($keyMapsPerTable as $tableName => $keyMaps) {
 
             $dep = new TableDepInfo();
             $dep->tableName = $tableName;
-            $dep->sourceTables = array();
+            $dep->sourceTables = [$keyMaps->getParentTable()];
             $dep->level = null; // not determined yet
-
-            foreach ($keyMaps as $keyMap) {
-                array_push($dep->sourceTables, $keyMap->sourceTabName);
-            }
 
             $this->deps[$tableName] = $dep;
 
@@ -44,7 +40,7 @@ class TableDependencyHelper
 
     public function getTablesSortedByLevel()
     {
-        $tableNames = array();
+        $tableNames = [];
 
         foreach ($this->deps as $tableName => $dep) {
             array_push($tableNames, $tableName);
@@ -67,7 +63,7 @@ class TableDependencyHelper
     public function getLevel($tableName)
     {
 
-        $this->currTables = array();
+        $this->currTables = [];
 
         return $this->_getLevel($tableName);
 

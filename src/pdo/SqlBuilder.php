@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,11 @@
  *
  */
 
-namespace enorm\pdo;
+namespace tbollmeier\enorm\pdo;
 
-require_once("enorm/dbapi/Condition.php");
-require_once("enorm/dbapi/FieldCondition.php");
-require_once("enorm/dbapi/Conjunction.php");
-require_once("enorm/dbapi/Disjunction.php");
-require_once("enorm/dbapi/Negation.php");
-require_once("enorm/dbapi/ReadTarget.php");
-require_once("enorm/dbmodel/Table.php");
-require_once("enorm/dbmodel/values.php");
+use tbollmeier\enorm\dbapi as api;
+use tbollmeier\enorm\dbmodel as model;
 
-use enorm\dbmodel as model;
-use enorm\dbmodel\Type;
-use enorm\dbapi as api;
-use enorm\dbapi\Condition;
-use enorm\dbapi\FieldCondition;
-use enorm\dbapi\FieldParameterCondition;
-use enorm\dbapi\Conjunction;
-use enorm\dbapi\Disjunction;
-use enorm\dbapi\Negation;
-use enorm\dbapi\FieldOperator;
 
 class SqlBuilder
 {
@@ -84,7 +68,9 @@ class SqlBuilder
 
     }
 
-    public function updateStmt(model\Table $table, $fieldValues, Condition $condition)
+    public function updateStmt(model\Table $table,
+                               $fieldValues,
+                               api\Condition $condition)
     {
 
         $sql = "UPDATE " . $table->getName() . " SET\n";
@@ -104,7 +90,9 @@ class SqlBuilder
 
     }
 
-    public function selectStmt(model\Source $source, $targets = array(), Condition $condition = null)
+    public function selectStmt(model\Source $source,
+                               $targets = array(),
+                               api\Condition $condition = null)
     {
         if (!$source instanceof model\Table) {
             throw new \Exception("Select only supported for tables");
@@ -142,7 +130,7 @@ class SqlBuilder
         return $sql;
     }
 
-    public function deleteStmt(model\Table $table, Condition $condition = null)
+    public function deleteStmt(model\Table $table, api\Condition $condition = null)
     {
         $sql = "DELETE FROM ".$table->getName();
         if ($condition) {
@@ -152,12 +140,12 @@ class SqlBuilder
         return $sql;
     }
 
-    public function conditionStr(Condition $condition)
+    public function conditionStr(api\Condition $condition)
     {
 
         $condStr = "";
 
-        if ($condition instanceof Conjunction) {
+        if ($condition instanceof api\Conjunction) {
             // a AND b ...
             foreach ($condition->getElements() as $elem) {
                 if (strlen($condStr) > 0) {
@@ -165,7 +153,7 @@ class SqlBuilder
                 }
                 $condStr .= "(" . $this->conditionStr($elem) . ")";
             }
-        } else if ($condition instanceof Disjunction) {
+        } else if ($condition instanceof api\Disjunction) {
             // a OR b ...
             foreach ($condition->getElements() as $elem) {
                 if (strlen($condStr) > 0) {
@@ -173,15 +161,15 @@ class SqlBuilder
                 }
                 $condStr .= "(" . $this->conditionStr($elem) . ")";
             }
-        } else if ($condition instanceof Negation) {
+        } else if ($condition instanceof api\Negation) {
 
             $condStr = "NOT (" . $this->conditionStr($condition) . ")";
 
-        } else if ($condition instanceof FieldCondition) {
+        } else if ($condition instanceof api\FieldCondition) {
 
             $condStr = $this->fieldCondStr($condition);
 
-        } else if ($condition instanceof FieldParameterCondition) {
+        } else if ($condition instanceof api\FieldParameterCondition) {
 
             throw new \Exception("Unsupported condition type"); //  TODO: implementieren
 
@@ -201,27 +189,27 @@ class SqlBuilder
         $category = $value->getType()->getCategory();
 
         switch ($category) {
-            case Type::BOOLEAN:
+            case model\Type::BOOLEAN:
                 $valstr = $value->getContent() ? "1" : "0";
                 break;
-            case Type::VARCHAR:
-            case Type::STRING:
+            case model\Type::VARCHAR:
+            case model\Type::STRING:
                 $valstr = "'" . $value->getContent() . "'";
                 break;
-            case Type::INTEGER:
+            case model\Type::INTEGER:
                 $valstr = sprintf("%d", $value->getContent());
                 break;
-            case Type::DECIMAL:
+            case model\Type::DECIMAL:
                 $valstr = sprintf("%f", $value->getContent());
                 break;
-            case Type::DATE:
+            case model\Type::DATE:
                 $valstr = sprintf("'%04d-%02d-%02d'",
                     $value->getYear(),
                     $value->getMonth(),
                     $value->getDay()
                 );
                 break;
-            case Type::TIME:
+            case model\Type::TIME:
                 $valstr = sprintf("'%02d:%02d:%02d'",
                     $value->getHour(),
                     $value->getMinute(),
@@ -275,22 +263,22 @@ class SqlBuilder
         $op = $fieldCond->getOperator();
 
         switch ($op) {
-            case FieldOperator::EQ:
+            case api\FieldOperator::EQ:
                 $condStr .= " = ";
                 break;
-            case FieldOperator::NE:
+            case api\FieldOperator::NE:
                 $condStr .= " <> ";
                 break;
-            case FieldOperator::GT:
+            case api\FieldOperator::GT:
                 $condStr .= " > ";
                 break;
-            case FieldOperator::GE:
+            case api\FieldOperator::GE:
                 $condStr .= " >= ";
                 break;
-            case FieldOperator::LT:
+            case api\FieldOperator::LT:
                 $condStr .= " < ";
                 break;
-            case FieldOperator::LE:
+            case api\FieldOperator::LE:
                 $condStr .= " <= ";
                 break;
             default:

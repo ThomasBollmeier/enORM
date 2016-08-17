@@ -96,9 +96,9 @@ interface Connection
 
     /**
      * @param model\Table $table
-     * @param $condition
+     * @param Condition $condition
      * @return PreparedStatement
      */
-    public function prepareDelete(model\Table $table, $condition);
+    public function prepareDelete(model\Table $table, Condition $condition);
 
 }

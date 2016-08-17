@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  * limitations under the License.
  *
  */
-set_include_path("../src" . PATH_SEPARATOR . get_include_path());
 
-require_once("dbsetup.php");
-require_once("enorm/pdo/ConnectionFactory.php");
-require_once("enorm/dbapi/ReadTarget.php");
-require_once("enorm/dbapi/FieldCondition.php");
-require_once("enorm/dbmodel/values.php");
+require_once __DIR__ . '/dbsetup.php';
+
+use tbollmeier\enorm\pdo\ConnectionFactory;
+use tbollmeier\enorm\dbapi as api;
+use tbollmeier\enorm\dbmodel as model;
+
 
 class DbConnectionTest extends PHPUnit_Framework_TestCase
 {
@@ -29,7 +29,7 @@ class DbConnectionTest extends PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->testDb = createTestDatabase();
-        $this->factory = new \enorm\pdo\ConnectionFactory();
+        $this->factory = new ConnectionFactory();
     }
 
     public function testConnection()
@@ -37,7 +37,7 @@ class DbConnectionTest extends PHPUnit_Framework_TestCase
         $conn = $this->factory->connectMySql(
             "localhost",
             $this->testDb->name,
-            "root",
+            "enormtester",
             ""
         );
 
@@ -54,11 +54,11 @@ class DbConnectionTest extends PHPUnit_Framework_TestCase
         $this->assertTrue($conn->create($persons, $record));
 
         $targets = array(
-            new \enorm\dbapi\ReadTargetField(
+            new api\ReadTargetField(
                 $persons->id,
                 "PersonId"
             ),
-            new \enorm\dbapi\ReadTargetField(
+            new api\ReadTargetField(
                 $persons->name,
                 "FamilyName"
             )
@@ -67,10 +67,10 @@ class DbConnectionTest extends PHPUnit_Framework_TestCase
         $cursor = $conn->read(
             $persons,
             $targets,
-            new \enorm\dbapi\FieldCondition(
+            new api\FieldCondition(
                 $persons->first_name,
-                \enorm\dbapi\FieldOperator::EQ,
-                new \enorm\dbmodel\StringValue("Herbert")
+                api\FieldOperator::EQ,
+                new model\StringValue("Herbert")
             )
         );
 

@@ -17,25 +17,37 @@
  */
 namespace tbollmeier\enorm\core;
 
-/**
- * Class KeyMapInfo
- *
- * Holds info on dependent (=target) tables
- * @package enorm\core
- */
-class KeyMapInfo
+
+class TableDepKeyMaps
 {
-    public $sourceTabName;
-    public $sourceFieldName;
-    public $targetFieldName;
+    private $parentTab;
+    private $fieldMap;
 
-    public static function create($targetField, $sourceTab, $sourceField)
+    public function __construct($parentTab)
     {
-        $keyMap = new KeyMapInfo();
-        $keyMap->targetFieldName = $targetField;
-        $keyMap->sourceTabName = $sourceTab;
-        $keyMap->sourceFieldName = $sourceField;
-
-        return $keyMap;
+        $this->parentTab = $parentTab;
+        $this->fieldMap = [];
     }
+
+    public function addMap($depTabField, $parentField)
+    {
+        $this->fieldMap[$depTabField] = $parentField;
+        return $this;
+    }
+
+    public function getParentTable()
+    {
+        return $this->parentTab;
+    }
+
+    public function getKeyFieldNames()
+    {
+        return array_keys($this->fieldMap);
+    }
+
+    public function getParentField($keyField)
+    {
+        return $this->fieldMap[$keyField];
+    }
+
 }

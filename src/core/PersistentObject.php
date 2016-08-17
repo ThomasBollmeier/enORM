@@ -34,7 +34,7 @@ interface PersistentObject
     /**
      * Get key mapping info for dependent tables
      *
-     * @return key mapping as array(<depTabName> => array of KeyMapInfo)
+     * @return array array of TableDepKeyMaps
      */
     public static function getKeyMapping();
 

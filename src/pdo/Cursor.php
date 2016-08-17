@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,19 @@
  *
  */
 
-namespace enorm\pdo;
+namespace tbollmeier\enorm\pdo;
 
-use enorm\dbapi\ReadTargetField;
-use enorm\dbmodel\Component;
-use enorm\dbmodel as model;
+use tbollmeier\enorm\dbapi as api;
+use tbollmeier\enorm\dbmodel as model;
 
-require_once("enorm/dbapi/Connection.php");
-require_once("enorm/dbapi/ReadTarget.php");
-require_once("enorm/dbmodel/Record.php");
-require_once("enorm/dbmodel/Table.php");
-require_once("enorm/dbmodel/types.php");
 
-class Cursor implements \enorm\dbapi\Cursor {
+class Cursor implements api\Cursor {
 
     public function __construct(
         $sqlbuilder,
         $statement,
         $source,
-        $targets
-    )
+        $targets)
     {
         $this->sqlbuilder = $sqlbuilder;
         $this->stmt = $statement;
@@ -87,13 +80,13 @@ class Cursor implements \enorm\dbapi\Cursor {
         } else {
             $comps = array();
             foreach ($targets as $target) {
-                if ($target instanceof ReadTargetField) {
+                if ($target instanceof api\ReadTargetField) {
                     $field = $target->getField();
                     $alias = $target->getAlias();
                     $compName = strlen($alias) == 0 ?
                         $field->getName() :
                         $alias;
-                    $comp = new Component(
+                    $comp = new model\Component(
                         $field->getType(),
                         $compName,
                         $field->isNullAllowed()

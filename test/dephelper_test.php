@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,60 +15,47 @@
  * limitations under the License.
  *
  */
-set_include_path("../src" . PATH_SEPARATOR . get_include_path());
 
-require_once("enorm/core/PersistentObject.php");
-use \enorm\core\TableDependencyHelper;
-use \enorm\core\KeyMapInfo;
+use tbollmeier\enorm\core\TableDependencyHelper;
+use tbollmeier\enorm\core\TableDepKeyMaps;
+
 
 class DepHelperTest extends PHPUnit_Framework_TestCase
 {
 
-    public function setUp()
-    {
-    }
-
     public function testDependencies()
     {
-        $keyMapsPerTable = array();
+        $keyMapsPerTable = [];
 
-        $keyMaps = array();
-        $keyMap = new KeyMapInfo();
-        $keyMap->sourceTabName = "order";
-        $keyMap->sourceFieldName = "id";
-        $keyMap->targetFieldName = "parent_id";
-        array_push($keyMaps, $keyMap);
+        $keyMaps = new TableDepKeyMaps('orders');
 
-        $keyMapsPerTable["items"] = $keyMaps;
+        $keyMaps->addMap('parent_id', 'id');
+        $keyMapsPerTable['items'] = $keyMaps;
 
-        $keyMaps = array();
-        $keyMap = new KeyMapInfo();
-        $keyMap->sourceTabName = "items";
-        $keyMap->sourceFieldName = "id";
-        $keyMap->targetFieldName = "item_id";
-        array_push($keyMaps, $keyMap);
 
-        $keyMapsPerTable["item_details"] = $keyMaps;
+        $keyMapsPerTable['item_details'] =
+            (new TableDepKeyMaps('items'))->addMap('item_id', 'id');
+
 
         $helper = new TableDependencyHelper($keyMapsPerTable);
 
         $this->assertEquals(
             0,
-            $helper->getLevel("order")
+            $helper->getLevel('orders')
         );
 
         $this->assertEquals(
             1,
-            $helper->getLevel("items")
+            $helper->getLevel('items')
         );
 
         $this->assertEquals(
             2,
-            $helper->getLevel("item_details")
+            $helper->getLevel('item_details')
         );
 
         $this->assertEquals(
-            array("items", "item_details"),
+            ['items', 'item_details'],
             $helper->getTablesSortedByLevel()
         );
 

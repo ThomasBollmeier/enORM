@@ -120,7 +120,7 @@ class PersObjManager {
             $depTable = $db->getTable($tableName);
 
             $conditions = array();
-            $rows = $rowsPerTable[$keyMap->sourceTabName];
+            $rows = $rowsPerTable[$keyMaps->getParentTable()];
 
             foreach ($rows as $row) {
               $conditions[] = $this->createConditionForRow(
@@ -142,18 +142,21 @@ class PersObjManager {
 
     }
 
-    private function createConditionForRow($keyMaps, $depTable, $row)
+    private function createConditionForRow(TableDepKeyMaps $keyMaps,
+                                           $depTable,
+                                           $row)
     {
         $conditions = array();
 
-        foreach ($keyMaps as $keyMap) {
-            $fieldName = $keyMap->targetFieldName;
+        $keyFields = $keyMaps->getKeyFieldNames();
+
+        foreach ($keyFields as $keyField) {
             array_push(
                 $conditions,
                 new dbapi\FieldCondition(
-                    $depTable->$fieldName,
+                    $depTable->$keyField,
                     dbapi\FieldOperator::EQ,
-                    $row->getValue($keyMap->sourceFieldName)
+                    $row->getValue($keyMaps->getParentField($keyField))
                 )
             );
         }

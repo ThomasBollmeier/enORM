@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,51 +15,39 @@
  * limitations under the License.
  *
  */
-set_include_path("../src" . PATH_SEPARATOR . get_include_path());
 
-require_once("enorm/core/PersObjManager.php");
-require_once("enorm/core/PersistentObject.php");
-require_once("dbsetup.php");
-require_once("enorm/pdo/ConnectionFactory.php");
-require_once("enorm/dbapi/ReadTarget.php");
+require_once __DIR__ . '/dbsetup.php';
 
-use \enorm\core\PersObjManager;
-use \enorm\core\PersistentObject;
-use \enorm\core\KeyFieldsInfo;
-use \enorm\core\KeyMapInfo;
-use \enorm\dbapi\ReadTargetField;
+use tbollmeier\enorm\core\PersObjManager;
+use tbollmeier\enorm\core\PersistentObject;
+use tbollmeier\enorm\core\TableDepKeyMaps;
+use tbollmeier\enorm\dbapi\ReadTargetField;
+use tbollmeier\enorm\pdo\ConnectionFactory;
+
 
 class Person implements PersistentObject {
 
+    const HEADER_TABLE = "persons";
+    const HOBBIES_TABLE = "hobbies";
+
     public $FirstName;
     public $FamilyName;
-    public $Hobbies = array();
+    public $Hobbies = [];
 
-    /**
-     * Get the header name and list(s) of header key fields that define
-     * the persistent instance.
-     *
-     * @return array of table name and array of key field names
-     *
-     * e.g. array("persons", array("id"))
-     */
     public static function getHeaderTabInfo()
     {
         return array(self::HEADER_TABLE, array("id"));
     }
 
-    /**
-     * Get key mapping info for dependent tables
-     *
-     * @return \enorm\core\key mapping as array(<depTabName> => array of KeyMapInfo) or null
-     */
     public static function getKeyMapping()
     {
-        return array(
-            self::HOBBIES_TABLE => array(
-                KeyMapInfo::create("person_id", self::HEADER_TABLE, "id")
-            )
-        );
+        $keyMapping = [];
+
+        $keyMaps = new TableDepKeyMaps(self::HEADER_TABLE);
+        $keyMaps->addMap('person_id', 'id');
+        $keyMapping[self::HOBBIES_TABLE] = $keyMaps;
+
+        return $keyMapping;
     }
 
     /**
@@ -96,8 +84,6 @@ class Person implements PersistentObject {
         // TODO: Implement prepareSave() method.
     }
 
-    const HEADER_TABLE = "persons";
-    const HOBBIES_TABLE = "hobbies";
     private $header = null;
     private $hobbyRows;
 
@@ -110,7 +96,7 @@ class PersObjManagerTest extends PHPUnit_Framework_TestCase
     {
         PersObjManagerTest::$currInst = $this;
         $this->testDb = createTestDatabase();
-        $this->factory = new \enorm\pdo\ConnectionFactory();
+        $this->factory = new ConnectionFactory();
     }
 
     public function testManager()
@@ -119,7 +105,7 @@ class PersObjManagerTest extends PHPUnit_Framework_TestCase
         $conn = $this->factory->connectMySql(
             "localhost",
             $this->testDb->name,
-            "root",
+            "enormtester",
             ""
         );
         $this->assertTrue($conn->isOK());

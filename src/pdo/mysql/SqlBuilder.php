@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
  *
  */
 
-namespace enorm\pdo\mysql;
+namespace tbollmeier\enorm\pdo\mysql;
 
-require_once("enorm/pdo/SqlBuilder.php");
-use enorm\pdo\SqlBuilder as Builder;
-use enorm\dbmodel as model;
+use tbollmeier\enorm\pdo\SqlBuilder as BaseSqlBuilder;
+use tbollmeier\enorm\dbmodel\Table;
 
-class SqlBuilder extends Builder {
 
-    public function createTableStmt(model\Table $table)
+class SqlBuilder extends BaseSqlBuilder {
+
+    public function createTableStmt(Table $table)
     {
         return "";
     }
