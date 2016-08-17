@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright 2013 Thomas Bollmeier <tbollmeier@web.de>
+ * Copyright 2013-2016 Thomas Bollmeier <entwickler@tbollmeier.de>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,10 @@
  * limitations under the License.
  *
  */
-set_include_path("../src" . PATH_SEPARATOR . get_include_path());
 
-require_once 'enorm/dbmodel/types.php';
-require_once 'enorm/dbmodel/values.php';
-require_once 'enorm/dbmodel/Table.php';
-require_once 'enorm/dbmodel/Database.php';
-require_once 'enorm/dbmodel/Record.php';
-use enorm\dbmodel as db;
-
-require_once 'enorm/dbapi/FieldCondition.php';
-require_once 'enorm/dbapi/Conjunction.php';
-require_once 'enorm/dbapi/Connection.php';
-require_once 'enorm/dbapi/ReadTarget.php';
-use enorm\dbapi as api;
-
-require_once 'enorm/pdo/SqlBuilder.php';
+use tbollmeier\enorm\dbmodel as db;
+use tbollmeier\enorm\dbapi as api;
+use tbollmeier\enorm\pdo\SqlBuilder;
 
 class SqlBuilderTest extends PHPUnit_Framework_TestCase
 {
@@ -50,7 +38,7 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
     public function testStatements()
     {
 
-        $builder = new \enorm\pdo\SqlBuilder();
+        $builder = new SqlBuilder();
 
         $record = $this->table->createRecord();
         $record->id = 42;
@@ -156,4 +144,3 @@ class SqlBuilderTest extends PHPUnit_Framework_TestCase
     private $table;
 
 }
-
