@@ -18,9 +18,9 @@
 
 require_once '../src/enorm/dbmodel/types.php';
 require_once '../src/enorm/dbmodel/values.php';
-require_once '../src/enorm/dbmodel/table.php';
-require_once '../src/enorm/dbmodel/database.php';
-require_once '../src/enorm/dbmodel/record.php';
+require_once '../src/enorm/dbmodel/Table.php';
+require_once '../src/enorm/dbmodel/Database.php';
+require_once '../src/enorm/dbmodel/Record.php';
 use enorm\dbmodel as db;
 
 class DbModelTest extends PHPUnit_Framework_TestCase

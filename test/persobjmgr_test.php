@@ -21,7 +21,7 @@ require_once("enorm/core/PersObjManager.php");
 require_once("enorm/core/PersistentObject.php");
 require_once("dbsetup.php");
 require_once("enorm/pdo/ConnectionFactory.php");
-require_once("enorm/dbapi/read_target.php");
+require_once("enorm/dbapi/ReadTarget.php");
 
 use \enorm\core\PersObjManager;
 use \enorm\core\PersistentObject;

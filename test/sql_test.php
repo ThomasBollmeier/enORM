@@ -19,15 +19,15 @@ set_include_path("../src" . PATH_SEPARATOR . get_include_path());
 
 require_once 'enorm/dbmodel/types.php';
 require_once 'enorm/dbmodel/values.php';
-require_once 'enorm/dbmodel/table.php';
-require_once 'enorm/dbmodel/database.php';
-require_once 'enorm/dbmodel/record.php';
+require_once 'enorm/dbmodel/Table.php';
+require_once 'enorm/dbmodel/Database.php';
+require_once 'enorm/dbmodel/Record.php';
 use enorm\dbmodel as db;
 
-require_once 'enorm/dbapi/field_condition.php';
-require_once 'enorm/dbapi/conjunction.php';
-require_once 'enorm/dbapi/connection.php';
-require_once 'enorm/dbapi/read_target.php';
+require_once 'enorm/dbapi/FieldCondition.php';
+require_once 'enorm/dbapi/Conjunction.php';
+require_once 'enorm/dbapi/Connection.php';
+require_once 'enorm/dbapi/ReadTarget.php';
 use enorm\dbapi as api;
 
 require_once 'enorm/pdo/SqlBuilder.php';

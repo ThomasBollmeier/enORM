@@ -1,7 +1,7 @@
 <?php
 
-require_once("enorm/dbmodel/database.php");
-require_once("enorm/dbmodel/table.php");
+require_once("enorm/dbmodel/Database.php");
+require_once("enorm/dbmodel/Table.php");
 use enorm\dbmodel as db;
 
 function createTestDatabase() {

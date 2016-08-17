@@ -19,8 +19,8 @@ set_include_path("../src" . PATH_SEPARATOR . get_include_path());
 
 require_once("dbsetup.php");
 require_once("enorm/pdo/ConnectionFactory.php");
-require_once("enorm/dbapi/read_target.php");
-require_once("enorm/dbapi/field_condition.php");
+require_once("enorm/dbapi/ReadTarget.php");
+require_once("enorm/dbapi/FieldCondition.php");
 require_once("enorm/dbmodel/values.php");
 
 class DbConnectionTest extends PHPUnit_Framework_TestCase
